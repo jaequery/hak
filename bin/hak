@@ -4,8 +4,8 @@ require 'rubygems'
 require 'commander/import'
 
 program :name, 'hakberry'
-program :version, '0.0.1'
-program :description, 'site management tool'
+program :version, '0.1.2'
+program :description, 'A site deployment tool using Vagrant and Docker'
 
 default_command :help
 
@@ -65,9 +65,8 @@ command :start do |c|
     if args.empty?
         puts "usage: hak start site.com"
     else
-        app = args[0]    
+        app = args[0]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        puts app_path
         vhosts = ["www.#{app}", "#{app}", "#{app}.hakberry.com"].join(',')
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && export VHOSTS=\"#{vhosts}\" && docker-compose up -d' && vagrant ssh -c 'cd #{app_path} && docker-compose logs'"
     end
@@ -100,7 +99,7 @@ command :logs do |c|
     if args.empty?
         puts "usage: hak logs site.com"
     else
-        app = args[0]        
+        app = args[0]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && docker-compose logs'"
     end
@@ -116,7 +115,7 @@ command :console do |c|
     if args.empty?
         puts "usage: hak console site.com"
     else
-        app = args[0]        
+        app = args[0]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"padrino console\" '"
     end
@@ -132,14 +131,14 @@ command :ssh do |c|
     if args.empty?
         puts "usage: hak ssh site.com"
     else
-        app = args[0]        
+        app = args[0]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"bash\"'"
     end
   end
 end
 
-command :run do |c|  
+command :run do |c|
   c.syntax = 'hak run [options]'
   c.summary = 'runs command inside application environment'
   c.description = ''
