@@ -117,7 +117,7 @@ command :console do |c|
     else
         app = args[0]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"padrino console\" '"
+        exec "cd ~/.hak && vagrant ssh -c '/home/vagrant/run.sh #{app} \"padrino console\" '"
     end
   end
 end
@@ -133,7 +133,7 @@ command :ssh do |c|
     else
         app = args[0]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"bash\"'"
+        exec "cd ~/.hak && vagrant ssh -c '/home/vagrant/run.sh \"bash\"'"
     end
   end
 end
@@ -150,7 +150,7 @@ command :run do |c|
         app = args[0]
         cmds = args[1]
         app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"#{cmds}\"'"
+        exec "cd ~/.hak && vagrant ssh -c '/home/vagrant/run.sh \"#{cmds}\"'"
     end
   end
 end
