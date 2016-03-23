@@ -84,7 +84,7 @@ command :stop do |c|
         puts "usage: hak stop site.com"
     else
         app = args[0]
-        app_path = '/hakberry' + File.expand_path(File.dirname(__FILE__)).to_s.split(File.expand_path('~/'))[1].to_s + '/' + app
+        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         vhosts = ["www.#{app}", "#{app}", "#{app}.hakberry.com"].join(',')
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && export VHOSTS=\"#{vhosts}\" && docker-compose stop'"
     end
@@ -101,7 +101,7 @@ command :logs do |c|
         puts "usage: hak logs site.com"
     else
         app = args[0]        
-        app_path = '/hakberry' + File.expand_path(File.dirname(__FILE__)).to_s.split(File.expand_path('~/'))[1].to_s + '/' + app
+        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && docker-compose logs'"
     end
   end
@@ -117,7 +117,7 @@ command :console do |c|
         puts "usage: hak console site.com"
     else
         app = args[0]        
-        app_path = '/hakberry' + File.expand_path(File.dirname(__FILE__)).to_s.split(File.expand_path('~/'))[1].to_s + '/' + app
+        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"padrino console\" '"
     end
   end
@@ -133,7 +133,7 @@ command :ssh do |c|
         puts "usage: hak ssh site.com"
     else
         app = args[0]        
-        app_path = '/hakberry' + File.expand_path(File.dirname(__FILE__)).to_s.split(File.expand_path('~/'))[1].to_s + '/' + app
+        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"bash\"'"
     end
   end
@@ -150,7 +150,7 @@ command :run do |c|
     else
         app = args[0]
         cmds = args[1]
-        app_path = '/hakberry' + File.expand_path(File.dirname(__FILE__)).to_s.split(File.expand_path('~/'))[1].to_s + '/' + app
+        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
         exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && bin/docker/run.sh \"#{cmds}\"'"
     end
   end
