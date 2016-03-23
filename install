@@ -1,0 +1,2 @@
+gem build hak.gemspec
+gem install hak-0.1.0.gem
