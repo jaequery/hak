@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    hak (0.1.0)
+    hak (0.1.5)
       commander (~> 4.4)
 
 GEM
