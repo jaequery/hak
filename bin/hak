@@ -56,7 +56,7 @@ command :create do |c|
 
     if !Dir.exists?(File.expand_path("~/.hak/" + repo))
       puts "#{repo} not exists, pulling"
-      exec "./hak pull #{repo}"
+      exec "hak pull #{repo}"
     end
 
     puts "copying ~/.hak/#{repo} to ./#{folder}"
