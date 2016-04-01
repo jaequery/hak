@@ -4,19 +4,67 @@ require 'rubygems'
 require 'commander/import'
 
 program :name, 'hakberry'
-program :version, '0.1.2'
-program :description, 'A site deployment tool using Vagrant and Docker'
+program :version, '0.2.0'
+program :description, 'Hakberry - a Ruby hackathon starter'
 
 default_command :help
 
-command :create do |c|
-  c.syntax = 'hak create site.com'
-  c.summary = 'creates hakberry site'
+command :pull do |c|
+  c.syntax = 'hak pull jaequery/honeybadger'
+  c.summary = 'downloads framework'
   c.description = ''
-  c.example 'description', 'hak create site.com'
+  c.example 'description', 'hak pull jaequery/honeybadger'
   c.action do |args, options|
-    app = args[0]
-    exec "cp -Rfp ~/.hak/site.com ./#{app}"
+
+    if !Dir.exists?(File.expand_path("~/.hak"))
+      exec "mkdir ~/.hak"
+    end
+
+    if args.empty?
+      repo = "uptownhr/hackathon-starter-lite"
+      package_author = "uptownhr"
+      package = "hackathon-starter-lite"
+      puts "Pulling #{repo}"
+    else
+      repo = args[0]
+      package_author = repo.split("/")[0]
+      package = repo.split("/")[1]
+    end
+
+    exec "cd ~/.hak && rm -rf #{repo} && mkdir -p #{repo} && cd #{repo} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && mv #{package}-master/* . && rm -r #{package}-master"
+  end
+end
+
+command :create do |c|
+  c.syntax = 'hak create something.com'
+  c.summary = 'downloads framework'
+  c.description = ''
+  c.example 'description', 'hak get jaequery/honeybadger'
+  c.action do |args, options|    
+
+    if args.empty?
+      puts "ex: hak create something"
+    else
+      folder = args[0]
+
+      if args[1].nil?
+        repo = "jaequery/honeybadger"
+      else
+        repo = args[1]
+      end
+    end
+
+    if !Dir.exists?(File.expand_path("~/.hak/" + repo))
+      puts "#{repo} not exists, pulling"
+      exec "./hak pull #{repo}"
+    end
+
+    puts "copying ~/.hak/#{repo} to ./#{folder}"
+    puts "now type:"
+    puts "cd #{folder}"
+    puts "hak up"
+    exec "cp -Rfp ~/.hak/#{repo} #{folder}"
+
   end
 end
 
@@ -28,10 +76,17 @@ command :on do |c|
   c.action do |args, options|
 
     # if ~/.hak not exists, initialize it
-    if !Dir.exists?(File.expand_path('~/.hak'))
-      exec "mkdir ~/.hak && cd ~/.hak && mkdir tmp && cd tmp && wget https://github.com/jaequery/hakberry/archive/master.zip && unzip master.zip && mv hakberry-master/.server/* ~/.hak && cd ~/.hak && rm -rf tmp && vagrant up"
+    if !Dir.exists?(File.expand_path('~/.dinghy'))
+      exec "mkdir -p ~/.hak/packages"
+    end
+
+    # if ~/.dinghy not exists, initialize it
+    if !Dir.exists?(File.expand_path('~/.dinghy'))
+      exec "mkdir ~/.hak"
+      exec "brew tap codekitchen/dinghy && brew install dinghy"
+      exec "brew install docker docker-machine"
     else
-      exec "cd ~/.hak && vagrant up"
+      exec "dinghy up"
     end
   end
 end
@@ -42,115 +97,49 @@ command :off do |c|
   c.description = 'shuts off the hakberry server'
   c.example 'description', 'hak off'
   c.action do |args, options|
-    exec "cd ~/.hak && vagrant halt"
+    exec "dinghy halt"
   end
 end
 
-command :destroy do |c|
-  c.syntax = 'hak destroy'
-  c.summary = 'destroys hakberry server'
-  c.description = 'destroys the hakberry server'
-  c.example 'description', 'hak destroy'
-  c.action do |args, options|
-    exec "cd ~/.hak && vagrant destroy"
-  end
-end
-
-command :start do |c|
-  c.syntax = 'hak start [options]'
-  c.summary = 'starts site'
-  c.description = 'this starts the website'
-  c.example 'description', 'hak start site.com'
+command :up do |c|
+  c.syntax = 'hak up'
+  c.summary = 'starts up site'
+  c.description = 'this starts up the website'
+  c.example 'description', 'hak up'
   c.action do |args, options|
     if args.empty?
-        puts "usage: hak start site.com"
+        puts "usage: hak up"
     else
-        app = args[0]
-        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        vhosts = ["www.#{app}", "#{app}", "#{app}.hakberry.com"].join(',')
-        exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && export VHOSTS=\"#{vhosts}\" && docker-compose up -d' && vagrant ssh -c 'cd #{app_path} && docker-compose logs'"
+        exec "docker-compose up -d && docker-compose logs"
     end
   end
 end
 
-command :stop do |c|
-  c.syntax = 'hak stop [options]'
-  c.summary = 'stops site'
-  c.description = 'stops the site'
-  c.example 'description', 'hak stop site.com'
+command :down do |c|
+  c.syntax = 'hak down'
+  c.summary = 'turn site down'
+  c.description = 'turns the site down'
+  c.example 'description', 'hak down'
   c.action do |args, options|
     if args.empty?
-        puts "usage: hak stop site.com"
+        puts "usage: hak down"
     else
-        app = args[0]
-        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        vhosts = ["www.#{app}", "#{app}", "#{app}.hakberry.com"].join(',')
-        exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && export VHOSTS=\"#{vhosts}\" && docker-compose stop'"
+        exec "docker-compose stop"
     end
   end
 end
 
 command :logs do |c|
-  c.syntax = 'hak logs [options]'
+  c.syntax = 'hak logs'
   c.summary = 'shows the application logs'
   c.description = ''
-  c.example 'description', 'hak logs site.com'
+  c.example 'description', 'hak logs'
   c.action do |args, options|
     if args.empty?
-        puts "usage: hak logs site.com"
+        puts "usage: hak logs"
     else
-        app = args[0]
-        app_path = '/hakberry' + File.expand_path(Dir.pwd).split(File.expand_path('~/'))[1].to_s + '/' + app
-        exec "cd ~/.hak && vagrant ssh -c 'cd #{app_path} && docker-compose logs'"
+        exec "docker-compose logs"
     end
   end
 end
 
-command :console do |c|
-  c.syntax = 'hak console [options]'
-  c.summary = 'shows the application console'
-  c.description = ''
-  c.example 'description', 'hak console site.com'
-  c.action do |args, options|
-    if args.empty?
-        puts "usage: hak console site.com"
-    else
-        app = args[0]
-        app_docker = app.sub(".", "")
-        exec "cd ~/.hak && vagrant ssh -c '/home/vagrant/run.sh #{app_docker} \"padrino console\" '"
-    end
-  end
-end
-
-command :ssh do |c|
-  c.syntax = 'hak ssh [options]'
-  c.summary = 'ssh into the application environment'
-  c.description = ''
-  c.example 'description', 'hak ssh site.com'
-  c.action do |args, options|
-    if args.empty?
-        puts "usage: hak ssh site.com"
-    else
-        app = args[0]
-        app_docker = app.sub(".", "")
-        exec "cd ~/.hak && vagrant ssh -c '/home/vagrant/run.sh #{app_docker} \"bash\"'"
-    end
-  end
-end
-
-command :run do |c|
-  c.syntax = 'hak run [options]'
-  c.summary = 'runs command inside application environment'
-  c.description = ''
-  c.example 'description', "hak run site.com 'ls -lnha'"
-  c.action do |args, options|
-    if args.empty?
-        puts "usage: hak run site.com 'cd / && ls -lnha'"
-    else
-        app = args[0]
-        cmds = args[1]
-        app_docker = app.sub(".", "")
-        exec "cd ~/.hak && vagrant ssh -c '/home/vagrant/run.sh #{app_docker} \"#{cmds}\"'"
-    end
-  end
-end
