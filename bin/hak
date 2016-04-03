@@ -107,11 +107,7 @@ command :up do |c|
   c.description = 'this starts up the website'
   c.example 'description', 'hak up'
   c.action do |args, options|
-    if args.empty?
-        puts "usage: hak up"
-    else
-        exec "docker-compose up -d && docker-compose logs"
-    end
+    exec "docker-compose up -d && docker-compose logs"
   end
 end
 
@@ -121,11 +117,7 @@ command :down do |c|
   c.description = 'turns the site down'
   c.example 'description', 'hak down'
   c.action do |args, options|
-    if args.empty?
-        puts "usage: hak down"
-    else
-        exec "docker-compose stop"
-    end
+    exec "docker-compose stop"
   end
 end
 
@@ -135,11 +127,35 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
-    if args.empty?
-        puts "usage: hak logs"
-    else
-        exec "docker-compose logs"
-    end
+    exec "docker-compose logs"
   end
 end
 
+command :ssh do |c|
+
+  require 'yaml'
+  require 'pp'
+  file_name = 'docker-compose.yml'
+  config_options = YAML.load_file(file_name)
+  app = ''
+  apps = []
+  config_options.each do |key, value|
+      apps << key
+  end
+
+  c.syntax = 'hak ssh'
+  c.summary = 'ssh to your app'
+  c.description = ''
+  c.example 'description', 'hak ssh [app]'
+  c.action do |args, options|
+
+    if args.empty?
+      puts "choose one:"
+      PP.pp apps
+      #app = apps[0]
+    else
+      app = args[0]
+    end
+    exec "docker-compose run #{app} bash"
+  end
+end
