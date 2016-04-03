@@ -1,2 +1,2 @@
 gem build hak.gemspec
-gem install hak-0.2.2.gem
+gem push hak-0.2.4.gem

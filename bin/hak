@@ -47,23 +47,29 @@ command :create do |c|
     else
       folder = args[0]
 
+      # set default to honebadger
       if args[1].nil?
         repo = "jaequery/honeybadger"
       else
         repo = args[1]
       end
+
+      # download package if not exist
+      if !Dir.exists?(File.expand_path("~/.hak/" + repo))
+        puts "#{repo} not exists, pulling"
+        exec "hak pull #{repo}"
+      end
+
+      # copies the package from local ~/.hak/[repo] to local folder
+      puts "copying ~/.hak/#{repo} to ./#{folder}"
+      puts "now type:"
+      puts "cd #{folder}"
+      puts "hak up"
+      exec "cp -Rfp ~/.hak/#{repo} #{folder}"
+
     end
 
-    if !Dir.exists?(File.expand_path("~/.hak/" + repo))
-      puts "#{repo} not exists, pulling"
-      exec "hak pull #{repo}"
-    end
-
-    puts "copying ~/.hak/#{repo} to ./#{folder}"
-    puts "now type:"
-    puts "cd #{folder}"
-    puts "hak up"
-    exec "cp -Rfp ~/.hak/#{repo} #{folder}"
+    
 
   end
 end
@@ -155,7 +161,8 @@ command :ssh do |c|
       #app = apps[0]
     else
       app = args[0]
+      exec "docker-compose run #{app} bash"
     end
-    exec "docker-compose run #{app} bash"
+    
   end
 end
