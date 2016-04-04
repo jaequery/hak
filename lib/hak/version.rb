@@ -1,3 +1,3 @@
 module Hak
-  VERSION = "0.2.4"
+  VERSION = "0.2.9"
 end

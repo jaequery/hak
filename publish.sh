@@ -1,2 +1,3 @@
-gem build hak.gemspec
-gem push hak-0.2.4.gem
+./reinstall
+hakgem=`ls -l hak-*.gem |awk '/hak(.*).gem/ {print $9}'|tail -n 1`
+gem push $hakgem

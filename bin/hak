@@ -2,9 +2,11 @@
 
 require 'rubygems'
 require 'commander/import'
+require 'yaml'
+require 'pp'
 
 program :name, 'hakberry'
-program :version, '0.2.0'
+program :version, '0.2.9'
 program :description, 'Hakberry - a Ruby hackathon starter'
 
 default_command :help
@@ -17,7 +19,7 @@ command :pull do |c|
   c.action do |args, options|
 
     if !Dir.exists?(File.expand_path("~/.hak"))
-      exec "mkdir ~/.hak"
+      system "mkdir ~/.hak"
     end
 
     if args.empty?
@@ -31,15 +33,15 @@ command :pull do |c|
       package = repo.split("/")[1]
     end
 
-    exec "cd ~/.hak && rm -rf #{repo} && mkdir -p #{repo} && cd #{repo} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && mv #{package}-master/* . && rm -r #{package}-master"
+    system "cd ~/.hak && rm -rf #{repo} && mkdir -p #{repo} && cd #{repo} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && mv #{package}-master/* . && rm -r #{package}-master"
   end
 end
 
 command :create do |c|
   c.syntax = 'hak create something.com'
-  c.summary = 'downloads framework'
+  c.summary = 'creates site'
   c.description = ''
-  c.example 'description', 'hak get jaequery/honeybadger'
+  c.example 'description', 'hak create something.com'
   c.action do |args, options|    
 
     if args.empty?
@@ -57,15 +59,27 @@ command :create do |c|
       # download package if not exist
       if !Dir.exists?(File.expand_path("~/.hak/" + repo))
         puts "#{repo} not exists, pulling"
-        exec "hak pull #{repo}"
+        system "hak pull #{repo}"
       end
 
       # copies the package from local ~/.hak/[repo] to local folder
       puts "copying ~/.hak/#{repo} to ./#{folder}"
+      system "cp -Rfp ~/.hak/#{repo} #{folder}"
+
+      # rename virtual host to app name
+      file_path = "#{folder}/docker-compose.yml"      
+      file = File.open(file_path, "r+")
+      content = file.read
+      new_content = content.gsub(/VIRTUAL_HOST=(.*?)\n/, "VIRTUAL_HOST=#{folder}.docker\n")
+      File.write(file_path, new_content)
+      puts "set VIRTUAL_HOST of http://#{file_path}.docker/"
+
       puts "now type:"
       puts "cd #{folder}"
       puts "hak up"
-      exec "cp -Rfp ~/.hak/#{repo} #{folder}"
+      puts "copied"
+
+      
 
     end
 
@@ -83,16 +97,16 @@ command :on do |c|
 
     # if ~/.hak not exists, initialize it
     if !Dir.exists?(File.expand_path('~/.dinghy'))
-      exec "mkdir -p ~/.hak/packages"
+      system "mkdir -p ~/.hak/packages"
     end
 
     # if ~/.dinghy not exists, initialize it
     if !Dir.exists?(File.expand_path('~/.dinghy'))
-      exec "mkdir ~/.hak"
-      exec "brew tap codekitchen/dinghy && brew install dinghy"
-      exec "brew install docker docker-machine"
+      system "mkdir ~/.hak"
+      system "brew tap codekitchen/dinghy && brew install dinghy"
+      system "brew install docker docker-machine wget"
     else
-      exec "dinghy up"
+      system "dinghy up"
     end
   end
 end
@@ -103,7 +117,7 @@ command :off do |c|
   c.description = 'shuts off the hakberry server'
   c.example 'description', 'hak off'
   c.action do |args, options|
-    exec "dinghy halt"
+    system "dinghy halt"
   end
 end
 
@@ -113,7 +127,7 @@ command :up do |c|
   c.description = 'this starts up the website'
   c.example 'description', 'hak up'
   c.action do |args, options|
-    exec "docker-compose up -d && docker-compose logs"
+    system "docker-compose up -d && docker-compose logs"
   end
 end
 
@@ -123,7 +137,7 @@ command :down do |c|
   c.description = 'turns the site down'
   c.example 'description', 'hak down'
   c.action do |args, options|
-    exec "docker-compose stop"
+    system "docker-compose stop"
   end
 end
 
@@ -133,35 +147,33 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
-    exec "docker-compose logs"
+    system "docker-compose logs"
   end
 end
 
 command :ssh do |c|
-
-  require 'yaml'
-  require 'pp'
-  file_name = 'docker-compose.yml'
-  config_options = YAML.load_file(file_name)
-  app = ''
-  apps = []
-  config_options.each do |key, value|
-      apps << key
-  end
-
+  
   c.syntax = 'hak ssh'
   c.summary = 'ssh to your app'
   c.description = ''
   c.example 'description', 'hak ssh [app]'
   c.action do |args, options|
 
+    file_name = 'docker-compose.yml'
+    config_options = YAML.load_file(file_name)
+    app = ''
+    apps = []
+    config_options.each do |key, value|
+        apps << key
+    end
+
     if args.empty?
       puts "choose one:"
-      PP.pp apps
+      puts apps
       #app = apps[0]
     else
       app = args[0]
-      exec "docker-compose run #{app} bash"
+      system "docker-compose run #{app} bash"
     end
     
   end
