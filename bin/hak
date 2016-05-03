@@ -202,8 +202,34 @@ command :ssh do |c|
 
 end
 
+command :list do |c|
+  c.syntax = 'hak ps'
+  c.summary = 'lists your running websites'
+  c.description = ''
+  c.example 'description', 'hak ps'
+  c.action do |args, options|
+    container_names = h_com('docker ps --format "{{.Names}}"', true)
+    lines = container_names.lines
+    sites = lines.map do | line |
+      line.split('_')[0]
+    end
 
-def h_com(command)
+    sites.shift
+
+    puts "Running websites"
+    puts sites.uniq
+  end
+end
+
+
+def h_com(command, hide=false)
   exec = "eval $(dinghy env) && #{command}"
-  system exec
+
+  if hide
+    res = `#{exec}`
+  else
+    res = system exec
+  end
+
+  return res
 end
