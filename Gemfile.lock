@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    hak (0.3.3)
+    hak (0.3.6)
       commander (~> 4.4)
 
 GEM
@@ -16,6 +16,3 @@ PLATFORMS
 
 DEPENDENCIES
   hak!
-
-BUNDLED WITH
-   1.10.6

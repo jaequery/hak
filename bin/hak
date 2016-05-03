@@ -149,7 +149,7 @@ command :up do |c|
   c.description = 'this starts up the website'
   c.example 'description', 'hak up'
   c.action do |args, options|
-    system "docker-compose up -d && docker-compose logs"
+    h_com "docker-compose up -d && docker-compose logs"
   end
 end
 
@@ -159,7 +159,7 @@ command :down do |c|
   c.description = 'turns the site down'
   c.example 'description', 'hak down'
   c.action do |args, options|
-    system "docker-compose stop"
+    h_com "docker-compose stop"
   end
 end
 
@@ -169,7 +169,7 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
-    system "docker-compose logs"
+    h_com "docker-compose logs"
   end
 end
 
@@ -195,9 +195,15 @@ command :ssh do |c|
       #app = apps[0]
     else
       app = args[0]
-      system "docker-compose run #{app} bash"
+      h_com "docker-compose run #{app} bash"
     end
     
   end
 
+end
+
+
+def h_com(command)
+  exec = "eval $(dinghy env) && #{command}"
+  system exec
 end
