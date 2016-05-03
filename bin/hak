@@ -202,7 +202,7 @@ command :ssh do |c|
 
 end
 
-command :list do |c|
+command :ps do |c|
   c.syntax = 'hak ps'
   c.summary = 'lists your running websites'
   c.description = ''
