@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Hak::VERSION
   spec.authors       = ["jaequery"]
   spec.email         = ["jaequery@gmail.com"]
-  spec.summary       = %q{Hak is NPM for websites}
+  spec.summary       = %q{Hak is like NPM for websites}
   spec.description   = %q{Hak is like NPM for websites. You can download, start, and deploy websites directly from the CLI.}
   spec.homepage      = "http://hakberry.com"
   spec.license       = "MIT"

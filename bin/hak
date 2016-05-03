@@ -6,8 +6,8 @@ require 'yaml'
 require 'pp'
 
 program :name, 'hakberry'
-program :version, '0.2.9'
-program :description, 'Hakberry - a Ruby hackathon starter'
+program :version, '0.3.6'
+program :description, 'Hak - start hacking!'
 
 default_command :help
 
@@ -23,9 +23,9 @@ command :pull do |c|
     end
 
     if args.empty?
-      repo = "uptownhr/hackathon-starter-lite"
-      package_author = "uptownhr"
-      package = "hackathon-starter-lite"
+      repo = "jaequery/honeybadger"
+      package_author = "jaequery"
+      package = "honeybadger"
       puts "Pulling #{repo}"
     else
       repo = args[0]
@@ -70,54 +70,76 @@ command :create do |c|
       file_path = "#{folder}/docker-compose.yml"      
       file = File.open(file_path, "r+")
       content = file.read
-      new_content = content.gsub(/VIRTUAL_HOST=(.*?)\n/, "VIRTUAL_HOST=#{folder}.docker\n")
+      host = "#{folder}.docker"
+      new_content = content.gsub(/VIRTUAL_HOST=(.*?)\n/, "VIRTUAL_HOST=#{host}\n")
       File.write(file_path, new_content)
-      puts "set VIRTUAL_HOST of http://#{file_path}.docker/"
+      puts "set VIRTUAL_HOST of http://#{host}/"
 
       puts "now type:"
       puts "cd #{folder}"
       puts "hak up"
-      puts "copied"
-
-      
 
     end
-
-    
 
   end
 end
 
 command :on do |c|
   c.syntax = 'hak on'
-  c.summary = 'powers on the hakbery server'
+  c.summary = 'powers on the hak server'
   c.description = 'sets up the entire docker based environment along with proxy'
   c.example 'description', 'hak on'
   c.action do |args, options|
 
     # if ~/.hak not exists, initialize it
-    if !Dir.exists?(File.expand_path('~/.dinghy'))
+    if !Dir.exists?(File.expand_path('~/.hak'))
       system "mkdir -p ~/.hak/packages"
-    end
+    end    
 
     # if ~/.dinghy not exists, initialize it
     if !Dir.exists?(File.expand_path('~/.dinghy'))
-      system "mkdir ~/.hak"
-      system "brew tap codekitchen/dinghy && brew install dinghy"
+
+      # remove existing docker
+      system "brew upgrade docker docker-machine"
+      system "brew tap codekitchen/dinghy"
+      system "brew install dinghy"
       system "brew install docker docker-machine wget"
-    else
-      system "dinghy up"
+      system "brew link --overwrite docker-machine"
+      system "brew install docker-machine-driver-xhyve"
+      system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
+      system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
+      system "dinghy create --provider xhyve"
+      
+      
     end
+
+    system "eval $(dinghy env)"
+
+    # start up
+    system "dinghy up"    
   end
 end
 
 command :off do |c|
   c.syntax = 'hak off'
-  c.summary = 'shuts off hakberry server'
-  c.description = 'shuts off the hakberry server'
+  c.summary = 'shuts off hak server'
+  c.description = 'shuts off the hak server'
   c.example 'description', 'hak off'
   c.action do |args, options|
     system "dinghy halt"
+  end
+end
+
+command :uninstall do |c|
+  c.syntax = 'hak destroy'
+  c.summary = 'destroys hak server'
+  c.description = 'shuts off and destroys the hak server'
+  c.example 'description', 'hak destroy'
+  c.action do |args, options|
+    system "dinghy halt"
+    system "dinghy destroy"
+    system "rm -rf ~/.hak"
+    system "rm -rf ~/.dinghy"
   end
 end
 
@@ -177,4 +199,5 @@ command :ssh do |c|
     end
     
   end
+
 end
