@@ -6,7 +6,7 @@ require 'yaml'
 require 'pp'
 
 program :name, 'hakberry'
-program :version, '0.3.6'
+program :version, '0.3.7'
 program :description, 'Hak - start hacking!'
 
 default_command :help
@@ -42,7 +42,7 @@ command :create do |c|
   c.summary = 'creates site'
   c.description = ''
   c.example 'description', 'hak create something.com'
-  c.action do |args, options|    
+  c.action do |args, options|
 
     if args.empty?
       puts "ex: hak create something"
@@ -67,7 +67,7 @@ command :create do |c|
       system "cp -Rfp ~/.hak/#{repo} #{folder}"
 
       # rename virtual host to app name
-      file_path = "#{folder}/docker-compose.yml"      
+      file_path = "#{folder}/docker-compose.yml"
       file = File.open(file_path, "r+")
       content = file.read
       host = "#{folder}.docker"
@@ -94,7 +94,7 @@ command :on do |c|
     # if ~/.hak not exists, initialize it
     if !Dir.exists?(File.expand_path('~/.hak'))
       system "mkdir -p ~/.hak/packages"
-    end    
+    end
 
     # if ~/.dinghy not exists, initialize it
     if !Dir.exists?(File.expand_path('~/.dinghy'))
@@ -109,14 +109,14 @@ command :on do |c|
       system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
       system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
       system "dinghy create --provider xhyve"
-      
-      
+
+
     end
 
     system "eval $(dinghy env)"
 
     # start up
-    system "dinghy up"    
+    system "dinghy up"
   end
 end
 
@@ -174,7 +174,7 @@ command :logs do |c|
 end
 
 command :ssh do |c|
-  
+
   c.syntax = 'hak ssh'
   c.summary = 'ssh to your app'
   c.description = ''
@@ -197,7 +197,7 @@ command :ssh do |c|
       app = args[0]
       h_com "docker-compose run #{app} bash"
     end
-    
+
   end
 
 end
