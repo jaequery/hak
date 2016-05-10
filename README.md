@@ -3,7 +3,7 @@
 ## What does it do
 
 Hak is a CLI that provides you with a robust, optimal development environment utilizing Docker for your Mac OSX.
-It is virtually a one-click setup and even comes with batteries included:
+It is virtually a one-click setup and even comes with batteries included via Dinghy:
 - Docker 
 - Docker Machine
 - xhyve
@@ -59,24 +59,38 @@ hak up
 
 Once done, your site should now be viewable at: http://somesite.docker/
 
+#### DNS
 
-#### Virtual Hosts
-Hakberry automatically proivdes you a jwilder/proxy and dnsmasq. This allows you to set a VIRTUAL_HOST property in your docker-compose.yml file which will allow you to perform virtual hosting on multiple domains.
+Dinghy installs a DNS server listening on the private interface, which
+resolves \*.docker to the Dinghy VM. For instance, if you have a running
+container that exposes port 3000 to the host, and you like to call it
+`myrailsapp`, you can connect to it at `myrailsapp.docker` port 3000, e.g.
+`http://myrailsapp.docker:3000/` or `telnet myrailsapp.docker 3000`.
 
-For example, if you place this inside your docker-compose.yml, notice the VIRTUAL_HOST:
+#### HTTP proxy
 
+Dinghy will run a HTTP proxy inside a docker container in the VM, giving you
+easy access to web apps running in other containers. This is based heavily on
+the excellent [nginx-proxy](https://github.com/jwilder/nginx-proxy) docker tool.
+
+The proxy will take a few moments to download the first time you launch the VM.
+
+Any containers that you want proxied, make sure the `VIRTUAL_HOST`
+environment variable is set, either with the `-e` option to docker or
+the environment hash in docker-compose. For instance setting
+`VIRTUAL_HOST=myrailsapp.docker` will make the container's exposed port
+available at `http://myrailsapp.docker/`. If the container exposes more
+than one port, set `VIRTUAL_PORT` to the http port number, as well.
+
+See the nginx-proxy documentation for further details.
+
+If you use docker-compose, you can add VIRTUAL_HOST to the environment hash in
+`docker-compose.yml`, for instance:
+
+```yaml
+web:
+  build: .
+  environment:
+    VIRTUAL_HOST: myrailsapp.docker
 ```
-app:
- image: jaequery/honeybadger
- links:
- - db:honeybadger-postgres
- command: /app/bin/docker/init.sh
- environment:
- - VIRTUAL_HOST=somesite.docker
- - RACK_ENV=development
- - BUNDLE_PATH=/app/volumes/bundler
- volumes:
- - .:/app
-```
 
-This will allow you to view your website at http://somesite.docker/
