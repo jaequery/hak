@@ -1,41 +1,76 @@
 # Hak
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hak`. To experiment with that code, run `bin/console` for an interactive prompt.
+## What does it do
 
-TODO: Delete this and the text above, and describe your gem
+Hak strives to create the most optimal development environment using Docker for Mac OSX.
+It comes with built-in DNS and NFS mounting capabilities for managing your websites much easier.
+It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
 
-## Installation
+## Getting Started
 
-Add this line to your application's Gemfile:
+#### Pre-requisites
 
-```ruby
-gem 'hak'
+* Mac OSX "Yosemite or El Capitan"
+
+#### Install
+
+```sh
+$ gem install hak
 ```
 
-And then execute:
+#### Power on
 
-    $ bundle
+This is all it takes to get started, very simple.
 
-Or install it yourself as:
+```sh
+hak on
+```
 
-    $ gem install hak
+The first time it runs, it will try install everything including Docker Machine, Dnsmasq, and an NFS daemon.
 
-## Usage
+After installed, you should also run this or add this to your bash profile:
 
-TODO: Write usage instructions here
+```
+eval $(dinghy env)
+```
 
-## Development
+#### Create a site
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```sh
+hak create somesite
+```
 
-## Contributing
+This will have created somsite in your current working directory.
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/hak. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+#### Start site
+
+```sh
+cd somesite
+hak up
+```
+
+Once done, your site should now be viewable at: http://somesite.docker/
 
 
-## License
+#### Virtual Hosts
+Hakberry automatically proivdes you a jwilder/proxy and dnsmasq. This allows you to set a VIRTUAL_HOST property in your docker-compose.yml file which will allow you to perform virtual hosting on multiple domains.
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+For example, if you place this inside your docker-compose.yml, notice the VIRTUAL_HOST:
 
+```
+app:
+ image: jaequery/honeybadger
+ links:
+ - db:honeybadger-postgres
+ command: /app/bin/docker/init.sh
+ environment:
+ - VIRTUAL_HOST=somesite.docker
+ - RACK_ENV=development
+ - BUNDLE_PATH=/app/volumes/bundler
+ volumes:
+ - .:/app
+```
+
+This will allow you to view your website at http://somesite.docker/
