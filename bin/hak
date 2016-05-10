@@ -5,8 +5,8 @@ require 'commander/import'
 require 'yaml'
 require 'pp'
 
-program :name, 'hakberry'
-program :version, '0.3.7'
+program :name, 'hak'
+program :version, '0.3.8'
 program :description, 'Hak - start hacking!'
 
 default_command :help
@@ -149,7 +149,7 @@ command :up do |c|
   c.description = 'this starts up the website'
   c.example 'description', 'hak up'
   c.action do |args, options|
-    h_com "docker-compose up -d && docker-compose logs"
+    run "docker-compose up -d && docker-compose logs"
   end
 end
 
@@ -159,7 +159,7 @@ command :down do |c|
   c.description = 'turns the site down'
   c.example 'description', 'hak down'
   c.action do |args, options|
-    h_com "docker-compose stop"
+    run "docker-compose stop"
   end
 end
 
@@ -169,7 +169,7 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
-    h_com "docker-compose logs"
+    run "docker-compose logs"
   end
 end
 
@@ -195,7 +195,7 @@ command :ssh do |c|
       #app = apps[0]
     else
       app = args[0]
-      h_com "docker-compose run #{app} bash"
+      run "docker-compose run #{app} bash"
     end
 
   end
@@ -208,21 +208,41 @@ command :ps do |c|
   c.description = ''
   c.example 'description', 'hak ps'
   c.action do |args, options|
-    container_names = h_com('docker ps --format "{{.Names}}"', true)
+    container_names = run('docker ps --format "{{.Names}}"', true)
     lines = container_names.lines
-    sites = lines.map do | line |
-      line.split('_')[0]
+    dinghy_running = false
+    sites = lines.map do |line|
+      name = line.split('_')[0]
+      if name == 'dinghy'
+        dinghy_running = true
+        "proxy"
+      else
+        name
+      end
     end
 
-    sites.shift
+    if dinghy_running == true
+      puts sites.uniq
+    else
+      puts "hak is off, turn it on first by typing:"
+      puts "hak on"
+    end
 
-    puts "Running websites"
-    puts sites.uniq
+  end
+end
+
+command :upgrade do |c|
+  c.syntax = 'hak upgrade'
+  c.summary = 'upgrades hak and dinghy'
+  c.description = ''
+  c.example 'description', 'hak upgrade'
+  c.action do |args, options|
+    run "dinghy upgrade"
   end
 end
 
 
-def h_com(command, hide=false)
+def run(command, hide=false)
   exec = "eval $(dinghy env) && #{command}"
 
   if hide
