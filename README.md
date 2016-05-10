@@ -2,8 +2,14 @@
 
 ## What does it do
 
-Hak strives to create the most optimal development environment using Docker for Mac OSX.
-It comes with built-in DNS and NFS mounting capabilities for managing your websites much easier.
+Hak is a CLI that provides you with a robust, optimal development environment utilizing Docker for your Mac OSX.
+It is virtually a one-click setup and even comes with batteries included:
+- Docker 
+- Docker Machine
+- xhyve
+- DNS
+- NFS
+
 Bonus: It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
 
 ## Getting Started
