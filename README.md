@@ -4,7 +4,7 @@
 
 Hak strives to create the most optimal development environment using Docker for Mac OSX.
 It comes with built-in DNS and NFS mounting capabilities for managing your websites much easier.
-It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
+Bonus: It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
 
 ## Getting Started
 
