@@ -1,3 +1,3 @@
-./reinstall
+./install
 hakgem=`ls -l hak-*.gem |awk '/hak(.*).gem/ {print $9}'|tail -n 1`
 gem push $hakgem

@@ -1,5 +1,0 @@
-#!/bin/bash
-gem uninstall hak
-gem build hak.gemspec
-hakgem=`ls -l hak-*.gem |awk '/hak(.*).gem/ {print $9}'|tail -n 1`
-gem install $hakgem
