@@ -59,15 +59,16 @@ hak up
 
 Once done, your site should now be viewable at: http://somesite.docker/
 
-## DNS
+## Good to know
 
+### Dinghy
 Dinghy installs a DNS server listening on the private interface, which
 resolves \*.docker to the Dinghy VM. For instance, if you have a running
 container that exposes port 3000 to the host, and you like to call it
 `myrailsapp`, you can connect to it at `myrailsapp.docker` port 3000, e.g.
 `http://myrailsapp.docker:3000/` or `telnet myrailsapp.docker 3000`.
 
-## HTTP proxy
+### HTTP proxy
 
 Dinghy will run a HTTP proxy inside a docker container in the VM, giving you
 easy access to web apps running in other containers. This is based heavily on
@@ -94,3 +95,20 @@ web:
     VIRTUAL_HOST: myrailsapp.docker
 ```
 
+## FAQ
+
+### It didn't install correctly? Run this:
+
+```
+sudo chown -R $(whoami) /usr/local
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+That should fix any brew related issues you might be having.
+
+### Docker command doesn't work? Run this:
+
+```
+echo "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi" >> ~/.bash_profile
+echo "eval $(dinghy env)" >> ~/.bashrc
+```
