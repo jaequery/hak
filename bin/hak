@@ -6,7 +6,7 @@ require 'yaml'
 require 'colorize'
 
 program :name, 'hak'
-program :version, '0.4.1'
+program :version, '0.4.2'
 program :description, 'Hak - start hacking!'
 
 default_command :help
@@ -160,10 +160,10 @@ command :create do |c|
       end
 
       # download package if not exist
-      if !Dir.exists?(File.expand_path("~/.hak/" + repo))
-        puts "#{repo} not exists, pulling"
+      #if !Dir.exists?(File.expand_path("~/.hak/" + repo))
+        #puts "#{repo} not exists, pulling"
         system "hak pull #{repo}"
-      end
+      #end
 
       # copies the package from local ~/.hak/[repo] to local folder
       puts "copying ~/.hak/#{repo} to ./#{folder}"
