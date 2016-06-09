@@ -183,23 +183,34 @@ end
 
 
 
-command :up do |c|
-  c.syntax = 'hak up'
+command :start do |c|
+  c.syntax = 'hak start'
   c.summary = 'starts up site'
   c.description = 'this starts up the website'
-  c.example 'description', 'hak up'
+  c.example 'description', 'hak start'
   c.action do |args, options|
-    run "docker-compose up -d && docker-compose logs"
+    run "docker-compose up -d && docker-compose logs -f"
   end
 end
 
-command :down do |c|
-  c.syntax = 'hak down'
-  c.summary = 'turn site down'
-  c.description = 'turns the site down'
-  c.example 'description', 'hak down'
+command :stop do |c|
+  c.syntax = 'hak stop'
+  c.summary = 'stops site'
+  c.description = 'stops the site'
+  c.example 'description', 'hak stop'
   c.action do |args, options|
     run "docker-compose stop"
+  end
+end
+
+command :restart do |c|
+  c.syntax = 'hak restart'
+  c.summary = 'restarts site'
+  c.description = 'restarts the site'
+  c.example 'description', 'hak restart'
+  c.action do |args, options|
+    run "docker-compose stop"
+    run "docker-compose up -d && docker-compose logs -f"
   end
 end
 
@@ -209,7 +220,7 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
-    run "docker-compose logs"
+    run "docker-compose logs -f"
   end
 end
 
