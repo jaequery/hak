@@ -3,13 +3,110 @@
 require 'rubygems'
 require 'commander/import'
 require 'yaml'
-require 'pp'
+require 'colorize'
 
 program :name, 'hak'
-program :version, '0.3.8'
+program :version, '0.3.9'
 program :description, 'Hak - start hacking!'
 
 default_command :help
+
+command :setup do |c|
+  c.syntax = 'hak setup'
+  c.summary = 'sets up the hak environment'
+  c.description = 'installs docker and sets up the entire docker based environment along with proxy'
+  c.example 'description', 'hak setup'
+  c.action do |args, options|
+
+    # if ~/.hak not exists, initialize it
+    puts "checking to see if ~/.hak exists".blue
+    if !Dir.exists?(File.expand_path('~/.hak'))
+      puts "- creating ~/.hak".light_blue
+      system "mkdir -p ~/.hak/packages"
+    else
+      puts "- it exists, skipping".blue
+    end
+
+    # if ~/.dinghy not exists, initialize it
+    puts "checking to see if ~/.dinghy exists".blue
+    if !Dir.exists?(File.expand_path('~/.dinghy'))
+      puts "- installing docker, docker-machine, docker-compose, xhyve, wget".light_blue
+      # remove existing docker
+      system "brew upgrade docker docker-machine docker-compose"
+      system "brew tap codekitchen/dinghy"
+      system "brew install dinghy"
+      system "brew install docker docker-machine docker-compose wget"
+      system "brew link --overwrite docker-machine"
+      system "brew install docker-machine-driver-xhyve"
+      system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
+      system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
+      system "dinghy create --provider xhyve"
+
+    else
+      puts "- it exists, skipping".blue
+    end
+
+    # check if Docker env variables are set and from which SHELL
+    puts "checking your shell:".blue
+    shell = `echo $SHELL`.strip    
+    puts "- #{shell} detected".blue
+
+    puts "checking if docker environmental variables are set:".blue
+    if shell == '/bin/zsh'
+      docker_env_exist = `fgrep "export DOCKER_MACHINE_NAME=dinghy" ~/.zshrc |wc -l`.to_i
+      if docker_env_exist == 0
+        puts '- not set, type:'.yellow
+        puts '  echo "$(dinghy env)" >> ~/.zshrc'
+      end
+    end
+
+    if shell == '/bin/bash'
+      docker_env_exist = `fgrep "export DOCKER_MACHINE_NAME=dinghy" ~/.bashrc |wc -l`.to_i
+      if docker_env_exist == 0
+        puts '- not set, type:'.yellow
+        puts '  echo "$(dinghy env)" >> ~/.bash_profile'
+      end
+    end    
+
+    puts "to power on hak, type:".yellow
+    puts "  hak on"
+
+  end
+end
+
+command :on do |c|
+  c.syntax = 'hak on'
+  c.summary = 'powers on the hak server'
+  c.description = 'powers on the hak server'
+  c.example 'description', 'hak on'
+  c.action do |args, options|
+    # start up
+    system "dinghy up"
+  end
+end
+
+command :off do |c|
+  c.syntax = 'hak off'
+  c.summary = 'shuts off hak server'
+  c.description = 'shuts off the hak server'
+  c.example 'description', 'hak off'
+  c.action do |args, options|
+    system "dinghy halt"
+  end
+end
+
+command :uninstall do |c|
+  c.syntax = 'hak destroy'
+  c.summary = 'destroys hak server'
+  c.description = 'shuts off and destroys the hak server'
+  c.example 'description', 'hak destroy'
+  c.action do |args, options|
+    system "dinghy halt"
+    system "dinghy destroy"
+    system "rm -rf ~/.hak"
+    system "rm -rf ~/.dinghy"
+  end
+end
 
 command :pull do |c|
   c.syntax = 'hak pull jaequery/honeybadger'
@@ -84,64 +181,7 @@ command :create do |c|
   end
 end
 
-command :on do |c|
-  c.syntax = 'hak on'
-  c.summary = 'powers on the hak server'
-  c.description = 'sets up the entire docker based environment along with proxy'
-  c.example 'description', 'hak on'
-  c.action do |args, options|
 
-    # if ~/.hak not exists, initialize it
-    if !Dir.exists?(File.expand_path('~/.hak'))
-      system "mkdir -p ~/.hak/packages"
-    end
-
-    # if ~/.dinghy not exists, initialize it
-    if !Dir.exists?(File.expand_path('~/.dinghy'))
-
-      # remove existing docker
-      system "brew upgrade docker docker-machine"
-      system "brew tap codekitchen/dinghy"
-      system "brew install dinghy"
-      system "brew install docker docker-machine wget"
-      system "brew link --overwrite docker-machine"
-      system "brew install docker-machine-driver-xhyve"
-      system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
-      system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
-      system "dinghy create --provider xhyve"
-
-
-    end
-
-    system "eval $(dinghy env)"
-
-    # start up
-    system "dinghy up"
-  end
-end
-
-command :off do |c|
-  c.syntax = 'hak off'
-  c.summary = 'shuts off hak server'
-  c.description = 'shuts off the hak server'
-  c.example 'description', 'hak off'
-  c.action do |args, options|
-    system "dinghy halt"
-  end
-end
-
-command :uninstall do |c|
-  c.syntax = 'hak destroy'
-  c.summary = 'destroys hak server'
-  c.description = 'shuts off and destroys the hak server'
-  c.example 'description', 'hak destroy'
-  c.action do |args, options|
-    system "dinghy halt"
-    system "dinghy destroy"
-    system "rm -rf ~/.hak"
-    system "rm -rf ~/.dinghy"
-  end
-end
 
 command :up do |c|
   c.syntax = 'hak up'

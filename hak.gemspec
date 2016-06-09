@@ -15,4 +15,5 @@ Gem::Specification.new do |spec|
   spec.files = ['lib/hak.rb', 'lib/hak/version.rb']
   spec.executables   = ["hak"]
   spec.add_dependency 'commander', '~> 4.4'
+  spec.add_dependency 'colorize'
 end
