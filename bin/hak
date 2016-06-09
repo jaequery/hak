@@ -6,7 +6,7 @@ require 'yaml'
 require 'colorize'
 
 program :name, 'hak'
-program :version, '0.3.9'
+program :version, '0.4.0'
 program :description, 'Hak - start hacking!'
 
 default_command :help
