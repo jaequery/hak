@@ -6,7 +6,7 @@ require 'yaml'
 require 'colorize'
 
 program :name, 'hak'
-program :version, '0.4.0'
+program :version, '0.4.2'
 program :description, 'Hak - start hacking!'
 
 default_command :help
@@ -23,6 +23,22 @@ command :setup do |c|
     if !Dir.exists?(File.expand_path('~/.hak'))
       puts "- creating ~/.hak".light_blue
       system "mkdir -p ~/.hak/packages"
+
+      # install required dependencies 
+      puts "- installing docker, docker-machine, docker-compose, xhyve, wget".light_blue
+
+      # re-install docker
+      system "brew upgrade dinghy docker docker-machine docker-compose wget docker-machine-driver-xhyve"
+      system "brew tap codekitchen/dinghy"
+      system "brew install dinghy"
+      system "brew install docker docker-machine docker-compose wget"
+      system "brew install docker-machine-driver-xhyve"
+      system "brew link --overwrite docker-machine"
+      
+      system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
+      system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
+      system "dinghy create --provider xhyve"
+
     else
       puts "- it exists, skipping".blue
     end
@@ -30,17 +46,7 @@ command :setup do |c|
     # if ~/.dinghy not exists, initialize it
     puts "checking to see if ~/.dinghy exists".blue
     if !Dir.exists?(File.expand_path('~/.dinghy'))
-      puts "- installing docker, docker-machine, docker-compose, xhyve, wget".light_blue
-      # remove existing docker
-      system "brew upgrade docker docker-machine docker-compose"
-      system "brew tap codekitchen/dinghy"
-      system "brew install dinghy"
-      system "brew install docker docker-machine docker-compose wget"
-      system "brew link --overwrite docker-machine"
-      system "brew install docker-machine-driver-xhyve"
-      system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
-      system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
-      system "dinghy create --provider xhyve"
+      
 
     else
       puts "- it exists, skipping".blue
@@ -61,7 +67,7 @@ command :setup do |c|
     end
 
     if shell == '/bin/bash'
-      docker_env_exist = `fgrep "export DOCKER_MACHINE_NAME=dinghy" ~/.bashrc |wc -l`.to_i
+      docker_env_exist = `fgrep "export DOCKER_MACHINE_NAME=dinghy" ~/.bash_profile |wc -l`.to_i
       if docker_env_exist == 0
         puts '- not set, type:'.yellow
         puts '  echo "$(dinghy env)" >> ~/.bash_profile'
@@ -155,7 +161,7 @@ command :create do |c|
 
       # download package if not exist
       #if !Dir.exists?(File.expand_path("~/.hak/" + repo))
-        puts "#{repo} not exists, pulling"
+        #puts "#{repo} not exists, pulling"
         system "hak pull #{repo}"
       #end
 
@@ -286,6 +292,7 @@ command :upgrade do |c|
   c.description = ''
   c.example 'description', 'hak upgrade'
   c.action do |args, options|
+    system "gem update hak"
     run "dinghy upgrade"
   end
 end
