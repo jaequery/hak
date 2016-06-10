@@ -6,7 +6,7 @@ require 'yaml'
 require 'colorize'
 
 program :name, 'hak'
-program :version, '0.4.4'
+program :version, '0.4.5'
 program :description, 'Hak - start hacking!'
 
 default_command :help
@@ -332,24 +332,31 @@ command :deploy do |c|
       end
 
       # check if docker is installed
-      res = `ssh #{dest} which docker`
+      res = `ssh #{dest} which docker`.strip
       if res == ""
         dest_docker_installed = false    
       end
 
       # check if docker-compose is installed
-      res = `ssh #{dest} which docker-compose`
+      res = `ssh #{dest} which docker-compose`.strip
       if res == ""
         dest_docker_installed = false    
       end      
 
+
       # if docker and/or docker-compose is not installed in dest server, install it
       if dest_docker_installed == false
-        res = `ssh #{dest} curl -s https://gist.githubusercontent.com/jaequery/d61ce5371068bc4b386e80b120e8f217/raw/6f14fb1a373335606e86e76627a2debfb8737ab3/install_latest_docker_compose.sh | bash /dev/stdin`
+        res = `ssh #{dest} "curl -s https://gist.githubusercontent.com/jaequery/d61ce5371068bc4b386e80b120e8f217/raw/6f14fb1a373335606e86e76627a2debfb8737ab3/install_latest_docker_compose.sh | bash /dev/stdin"`
+      end
+
+      # add user to docker group if not root
+      user = `ssh #{dest} whoami`.strip
+      if res != "root"
+        system "ssh #{dest} sudo usermod -aG docker #{user}"
       end
 
       # if jwilder/nginx-proxy is not running, run it
-      res = `ssh #{dest} docker ps |grep jwilder/nginx-proxy`
+      res = `ssh #{dest} docker ps |grep jwilder/nginx-proxy`.strip
       if res == ""
         res = `ssh #{dest} "docker run -d --restart=always -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro --name=proxy jwilder/nginx-proxy"`
       end
