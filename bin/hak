@@ -154,10 +154,10 @@ command :create do |c|
       end
 
       # download package if not exist
-      if !Dir.exists?(File.expand_path("~/.hak/" + repo))
+      #if !Dir.exists?(File.expand_path("~/.hak/" + repo))
         puts "#{repo} not exists, pulling"
         system "hak pull #{repo}"
-      end
+      #end
 
       # copies the package from local ~/.hak/[repo] to local folder
       puts "copying ~/.hak/#{repo} to ./#{folder}"
@@ -169,19 +169,17 @@ command :create do |c|
       content = file.read
       host = "#{folder}.docker"
       new_content = content.gsub(/VIRTUAL_HOST=(.*?)\n/, "VIRTUAL_HOST=#{host}\n")
-      File.write(file_path, new_content)
-      puts "set VIRTUAL_HOST of http://#{host}/"
+      File.write(file_path, new_content)    
 
-      puts "now type:"
+      puts "now type:".yellow
       puts "cd #{folder}"
-      puts "hak up"
+      puts "hak start"
+      puts "site should be viewable at http://#{host}/".green
 
     end
 
   end
 end
-
-
 
 command :start do |c|
   c.syntax = 'hak start'
