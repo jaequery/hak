@@ -6,7 +6,7 @@ require 'yaml'
 require 'colorize'
 
 program :name, 'hak'
-program :version, '0.4.3'
+program :version, '0.4.4'
 program :description, 'Hak - start hacking!'
 
 default_command :help
@@ -159,11 +159,7 @@ command :create do |c|
         repo = args[1]
       end
 
-      # download package if not exist
-      #if !Dir.exists?(File.expand_path("~/.hak/" + repo))
-        #puts "#{repo} not exists, pulling"
-        system "hak pull #{repo}"
-      #end
+      system "hak pull #{repo}"
 
       # copies the package from local ~/.hak/[repo] to local folder
       puts "copying ~/.hak/#{repo} to ./#{folder}"
@@ -294,6 +290,83 @@ command :upgrade do |c|
   c.action do |args, options|
     system "gem update hak"
     run "dinghy upgrade"
+  end
+end
+
+command :deploy do |c|
+  c.syntax = 'hak deploy jae@someserver.com'
+  c.summary = 'deploys current site'
+  c.description = ''
+  c.example 'description', 'hak deploy jae@someserver.com'
+  c.action do |args, options|
+
+    dest = args[0]
+    dest_docker_installed = true
+
+    if args.empty?
+      puts "ex: hak deploy jae@someserver.com".yellow
+    else
+
+      # get app name, make sure hak deploy is run from root of your app
+      pwd = `pwd`
+      dirs = pwd.split("/")
+      app = dirs[dirs.length - 1].strip
+
+      # check if docker-compose-production.yml is there
+      res = `ls -l |grep docker-compose-production.yml`
+      if res == ""
+        puts "docker-compose-production file not exists".red
+        puts "copying docker-compose.yml to docker-compose-production.yml".green
+        domain = ask "what domain do you want to use? ex) myawesomesite.com".light_blue
+        puts "#{domain} set in docker-compose-production.yml"
+        system "cp docker-compose.yml docker-compose-production.yml"
+
+        # rename virtual host to new domain name
+        file_path = "docker-compose-production.yml"
+        file = File.open(file_path, "r+")
+        content = file.read
+        host = domain
+        new_content = content.gsub(/VIRTUAL_HOST=(.*?)\n/, "VIRTUAL_HOST=#{host}\n")
+        File.write(file_path, new_content)
+
+      end
+
+      # check if docker is installed
+      res = `ssh #{dest} which docker`
+      if res == ""
+        dest_docker_installed = false    
+      end
+
+      # check if docker-compose is installed
+      res = `ssh #{dest} which docker-compose`
+      if res == ""
+        dest_docker_installed = false    
+      end      
+
+      # if docker and/or docker-compose is not installed in dest server, install it
+      if dest_docker_installed == false
+        res = `ssh #{dest} curl -s https://gist.githubusercontent.com/jaequery/d61ce5371068bc4b386e80b120e8f217/raw/6f14fb1a373335606e86e76627a2debfb8737ab3/install_latest_docker_compose.sh | bash /dev/stdin`
+      end
+
+      # if jwilder/nginx-proxy is not running, run it
+      res = `ssh #{dest} docker ps |grep jwilder/nginx-proxy`
+      if res == ""
+        res = `ssh #{dest} "docker run -d --restart=always -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro --name=proxy jwilder/nginx-proxy"`
+      end
+
+      # deploy to dest
+      #res = `rsync -avzr ../#{app} #{dest}:~/sites/` 
+      #res = `ssh #{dest} \"cd ~/sites/#{app} && docker-compose stop && docker-compose up && docker-compose logs -f\"`
+      puts "rsyncing files ... ".yellow
+      res = `rsync -avzr ../#{app} #{dest}:~/sites/`
+      puts "files rsynced".green
+
+      puts "running docker-compose -f docker-compose-production.yml up".yellow
+      res = `ssh #{dest} "cd ~/sites/#{app} && docker-compose stop && docker-compose -f docker-compose-production.yml up && docker-compose logs"`
+      puts "all up".green
+      
+    end
+
   end
 end
 
