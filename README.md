@@ -57,10 +57,28 @@ This will have created somesite in your current working directory.
 
 ```sh
 cd somesite
-hak up
+hak start
+```
+
+To verify, type:
+
+```
+hak ps
 ```
 
 Once done, your site should now be viewable at http://somesite.docker/ from your browser (don't forget the trailing slash).
+
+And to stop:
+
+```
+hak stop
+```
+
+You can also restart it with:
+
+```
+hak restart
+```
 
 ## How does it all work?
 
