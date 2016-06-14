@@ -23,11 +23,6 @@ hak install
 ```
 
 This will try install everything including Docker, Docker Machine, Docker Compose, Dnsmasq, Nginx Proxy, and an NFS daemon.
-After installed, you should also run this and add this to your ~/.bash_profile (or ~/.zshrc):
-
-```
-eval $(dinghy env)
-```
 
 Now power it on by typing
 
