@@ -2,7 +2,7 @@
 
 ## What does it do
 
-Have you ever wanted something that makes downloading and starting up a website as simple as, hak create website.com? Well, you now can.
+Have you ever wanted something that makes downloading and starting up a website as simple as, hak create website.com? Well, now you can.
 
 ## Getting Started
 
