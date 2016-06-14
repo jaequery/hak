@@ -18,27 +18,38 @@ Bonus: It also comes with built-in web framework called "Honeybadger" for you to
 
 * Mac OSX "Yosemite or El Capitan"
 
-#### Install
+#### Download hak
 
 ```sh
-$ gem install hak
+$ sudo gem install hak
 ```
 
-#### Power on
-
-This is all it takes to get started, very simple.
+#### Install Hak
 
 ```sh
-hak on
+hak install
 ```
 
-The first time it runs, it will try install everything including Docker Machine, Dnsmasq, and an NFS daemon.
-
-After installed, you should also run this or add this to your bash profile:
+This will try install everything including Docker, Docker Machine, Docker Compose, Dnsmasq, Nginx Proxy, and an NFS daemon.
+After installed, you should also run this and add this to your ~/.bash_profile (or ~/.zshrc):
 
 ```
 eval $(dinghy env)
 ```
+
+Now power it on by typing
+
+```
+hak on
+```
+
+To verify that it is all working, just type:
+
+```
+hak ps
+```
+
+You should see proxy is up and running, which is the jwilder nginx proxy hak automatically uses for virtual hosting all your websites.
 
 #### Create a site
 
@@ -48,7 +59,7 @@ Now go into a folder where you'd like to store all your websites, for instance: 
 hak create somesite
 ```
 
-This will have created somsite in your current working directory.
+This will have created somesite in your current working directory.
 
 #### Start site
 
@@ -57,9 +68,11 @@ cd somesite
 hak up
 ```
 
-Once done, your site should now be viewable at: http://somesite.docker/
+Once done, your site should now be viewable at http://somesite.docker/ from your browser (don't forget the trailing slash).
 
-## Good to know
+## How does it all work?
+
+Hak currently uses Dinghy as a boilerplate to setup many of the things required for an optimal Docker environment on OSX.
 
 ### Dinghy
 Dinghy installs a DNS server listening on the private interface, which
@@ -109,6 +122,5 @@ That should fix any brew related issues you might be having.
 ### Docker command doesn't work? Run this:
 
 ```
-echo "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi" >> ~/.bash_profile
-echo "eval $(dinghy env)" >> ~/.bashrc
+echo 'eval $(dinghy env)' >> ~/.bashrc
 ```
