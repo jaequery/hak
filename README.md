@@ -48,9 +48,9 @@ Now go into a folder where you'd like to store all your websites, for instance: 
 hak create somesite
 ```
 
-This will have created somesite in your current working directory.
+You will be prompted to choose a framework of choice and once done, it will have created a ./somesite/ directory.
 
-#### Start site
+#### Start the site
 
 ```sh
 cd somesite
