@@ -45,15 +45,15 @@ You should see proxy is up and running, which is the jwilder nginx proxy hak aut
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
 ```sh
-hak create somesite
+hak create somesite.com
 ```
 
-You will be prompted to choose a framework of choice and once done, it will have created a ./somesite/ directory.
+You will be prompted to choose a framework of choice and once done, it will have created a ./somesite.com/ directory.
 
 #### Start the site
 
 ```sh
-cd somesite
+cd somesite.com
 hak start
 ```
 
@@ -63,7 +63,7 @@ To verify, type:
 hak ps
 ```
 
-Once done, your site should now be viewable at http://somesite.docker/ from your browser (don't forget the trailing slash).
+Once done, your site should now be viewable at http://somesite.com.docker/ from your browser (don't forget the trailing slash).
 
 And to stop:
 
