@@ -7,6 +7,7 @@ It is virtually a one-click setup and even comes with batteries included via Din
 - Docker 
 - Docker Machine
 - xhyve
+- Nginx HTTP Proxy
 - DNS
 - NFS
 
