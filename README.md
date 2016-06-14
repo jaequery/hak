@@ -6,6 +6,15 @@ Hak is the all-in-one solution to download, develop, run, and deploy websites fr
 It uses Docker so you can quickly and efficiently run any kind of stacks at your disposal, that includes node.js, to Ruby, to PHP, etc .
 Hak also installs the most optimized Docker environment for you on your OSX through it's xhyve, nfs, and DNS/HTTP proxy out of the box.
 
+Why use Hak? 
+
+1) It allows you to run multiple apps at the same time and assigns a virtual host to each app it runs. No more http://localhost:3000/ now you can actually view them at http://yourappname.docker/
+
+2) It runs off of standard docker-compose.yml file so no need to learn anything new. Hak doesn't add any complexity to Docker eco-system, it just simplifies it. For instance, hak start, is really just a shortcut to ```docker-compose up && docker-compose logs -f```
+
+3) It lets you easily deploy your app to any Ubuntu server with standard SSH root/sudo access. No need to learn any complex deployment strategy, all you need to do is, type: ```hak deploy user@someserver.com``` and it will set up Docker and launches your app on the destination server. It is that simple!
+
+
 ## Getting Started
 
 #### Pre-requisites
@@ -76,6 +85,21 @@ You can also restart it with:
 ```
 hak restart
 ```
+
+#### Deply your site
+
+Now that you finished developing your app and ready to deploy. Now what?
+
+Well, hak makes this extremely simple too!
+You just need an Ubuntu server you'd like to deploy to and then from your project root, type:
+
+```
+hak deploy root@x.x.x.x
+```
+
+Where x.x.x.x is the IP or hostname of your Ubuntu 14.04 TLS server.
+
+And that's it, it's awesome.
 
 ## How does it all work?
 
