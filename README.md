@@ -2,16 +2,6 @@
 
 ## What does it do
 
-Hak is a CLI that provides you with a robust, optimal development environment utilizing Docker for your Mac OSX.
-It is virtually a one-click setup and even comes with batteries included via Dinghy:
-- Docker 
-- Docker Machine
-- xhyve
-- Nginx HTTP Proxy
-- DNS
-- NFS
-
-Bonus: It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
 
 ## Getting Started
 
@@ -74,6 +64,16 @@ Once done, your site should now be viewable at http://somesite.docker/ from your
 ## How does it all work?
 
 Hak currently uses Dinghy as a boilerplate to setup many of the things required for an optimal Docker environment on OSX.
+It is virtually a one-click setup and even comes with batteries included via Dinghy:
+
+- Docker 
+- Docker Machine
+- xhyve
+- Nginx HTTP Proxy
+- DNS
+- NFS
+
+Bonus: It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
 
 ### Dinghy
 Dinghy installs a DNS server listening on the private interface, which
