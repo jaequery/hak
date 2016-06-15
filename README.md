@@ -53,36 +53,28 @@ You should see proxy is up and running, which is the jwilder nginx proxy hak aut
 
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
-At the moment, there are only two hak ready repositories, but more will get added soon. Basicallyy these are public github repositories. Any repository with a docker-compose.yml should work.
+These are public github repositories. Any repository with a docker-compose.yml and a VIRTUAL_HOST environmental variable in it should work. Hak will replace whatever is inside the VIRTUAL_HOST environment with the hostname you input when you type the hak get command.
 
 [honeybadger]
 - a Ruby hackathon framework using Sinatra/Postgres with admin + ORM included
 ```
-hak get jaequery/honeybadger
+hak get jaequery/honeybadger mysite.com
 ```
 
 [react-starter]
 - an express + react + mongo
 ```
-hak get jaequery/react-starter
-```
-
-
-
-This will have created ./react-starter/ directory.
-
-(Optionally, you can specify the folder and the vhost by adding in an extra argument.)
-
-```
 hak get jaequery/react-starter mysite.com
 ```
 
-Then you will see ./mysite.com/ folder and you should be able to access your site from http://mysite.com.docker/
+This will have created ./mysite.com/ directory and once you start it, you should be able to access your site from http://mysite.com.docker/
+
+You can also edit the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
 
 #### Start the site
 
 ```sh
-cd react-starter
+cd mysite.com
 hak start
 ```
 
@@ -92,7 +84,7 @@ To verify, type:
 hak ps
 ```
 
-Once done, your site should now be viewable at http://react-starter.docker/ from your browser (don't forget the trailing slash).
+Once done, your site should now be viewable at http://mysite.com.docker/ from your browser (don't forget the trailing slash).
 
 If you wish to change the vhost from http://react-starter.docker to something else, just modify the docker-compose.yml and update the VIRTUAL_HOST setting to any other hostname you wish, but make sure it ends in .docker, as hak will resolve the hostname internally for you with it's built in DNS server.
 
