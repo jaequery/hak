@@ -67,12 +67,6 @@ hak get jaequery/honeybadger mysite.com
 hak get jaequery/react-starter mysite.com
 ```
 
-[react-starter](https://github.com/uptownhr/hackable)
-- an express + react + mongo
-```
-hak get uptownhr/hackable mysite.com
-```
-
 This will have created ./mysite.com/ directory and once you start it, you should be able to access your site from http://mysite.com.docker/
 
 You can also edit the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
