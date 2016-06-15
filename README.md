@@ -2,7 +2,7 @@
 
 ## What does it do
 
-Hak is the all-in-one solution to download, develop, run, and deploy websites from your OSX.
+Hak is an all-in-one solution to download, develop, run, and deploy websites from your OSX.
 It uses Docker so you can quickly and efficiently run any kind of stacks at your disposal, that includes node.js, to Ruby, to PHP, etc .
 Hak also installs the most optimized Docker environment for you on your OSX through it's xhyve, nfs, and DNS/HTTP proxy out of the box.
 
