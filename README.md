@@ -59,6 +59,14 @@ hak get jaequery/react-starter
 
 This will have created ./react-starter/ directory.
 
+(Optionally, you can specify the folder and the vhost by adding in an extra argument.)
+
+```
+hak get jaequery/react-starter mysite.com
+```
+
+Then you will see ./mysite.com/ folder and you should be able to access your site from http://mysite.com.docker/
+
 #### Start the site
 
 ```sh
