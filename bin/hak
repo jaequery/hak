@@ -208,6 +208,16 @@ command :restart do |c|
   end
 end
 
+command :rm do |c|
+  c.syntax = 'hak rm'
+  c.summary = 'deletes docker containers for the project'
+  c.description = 'deletes docker containers for the project'
+  c.example 'description', 'hak rm'
+  c.action do |args, options|
+    run "docker-compose rm -f"
+  end
+end
+
 command :logs do |c|
   c.syntax = 'hak logs'
   c.summary = 'shows the application logs'
