@@ -53,9 +53,21 @@ You should see proxy is up and running, which is the jwilder nginx proxy hak aut
 
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
-```sh
+At the moment, there are only two hak ready repositories, but more will get added soon. Basicallyy these are public github repositories. Any repository with a docker-compose.yml should work.
+
+[honeybadger]
+- a Ruby hackathon framework using Sinatra/Postgres with admin + ORM included
+```
+hak get jaequery/honeybadger
+```
+
+[react-starter]
+- an express + react + mongo
+```
 hak get jaequery/react-starter
 ```
+
+
 
 This will have created ./react-starter/ directory.
 
