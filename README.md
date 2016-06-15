@@ -55,13 +55,13 @@ Now go into a folder where you'd like to store all your websites, for instance: 
 
 These are public github repositories. Any repository with a docker-compose.yml and a VIRTUAL_HOST environmental variable in it should work. Hak will replace whatever is inside the VIRTUAL_HOST environment with the hostname you input when you type the hak get command.
 
-[honeybadger]
+[honeybadger](https://github.com/jaequery/honeybadger)
 - a Ruby hackathon framework using Sinatra/Postgres with admin + ORM included
 ```
 hak get jaequery/honeybadger mysite.com
 ```
 
-[react-starter]
+[react-starter](https://github.com/jaequery/react-starter)
 - an express + react + mongo
 ```
 hak get jaequery/react-starter mysite.com
