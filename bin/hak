@@ -7,7 +7,7 @@ require 'colorize'
 require 'highline'
 
 program :name, 'hak'
-program :version, '0.4.8'
+program :version, '0.4.9'
 program :description, 'Hak - A Docker powered website manager for OSX'
 
 default_command :help
@@ -139,7 +139,11 @@ command :get do |c|
   c.action do |args, options|
 
     if args.empty?
-      puts "ex: hak get jaequery/react-starter"
+      puts "type one of the following to get started: "
+      puts "hak get jaequery/react-starter"
+      puts "hak get jaequery/honeybadger"
+      puts " "
+      puts "for more hak-ready packages, check out https://hak.sh/"
 
     else
       repo = args[0]      
