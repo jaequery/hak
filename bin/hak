@@ -4,9 +4,10 @@ require 'rubygems'
 require 'commander/import'
 require 'yaml'
 require 'colorize'
+require 'highline'
 
 program :name, 'hak'
-program :version, '0.4.6'
+program :version, '0.4.8'
 program :description, 'Hak - A Docker powered website manager for OSX'
 
 default_command :help
@@ -104,30 +105,59 @@ command :off do |c|
   end
 end
 
-command :create do |c|
-  c.syntax = 'hak create something.com'
+command :pull do |c|
+  c.syntax = 'hak pull jaequery/honeybadger'
+  c.summary = 'downloads framework'
+  c.description = ''
+  c.example 'description', 'hak pull jaequery/honeybadger'
+  c.action do |args, options|
+
+    if !Dir.exists?(File.expand_path("~/.hak"))
+      system "mkdir ~/.hak"
+    end
+
+    if args.empty?
+      repo = "jaequery/honeybadger"
+      package_author = "jaequery"
+      package = "honeybadger"
+      puts "Pulling #{repo}"
+    else
+      repo = args[0]
+      package_author = repo.split("/")[0]
+      package = repo.split("/")[1]
+    end
+
+    system "cd ~/.hak && rm -rf #{repo} && mkdir -p #{repo} && cd #{repo} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && mv #{package}-master/* . && rm -r #{package}-master"
+  end
+end
+
+command :get do |c|
+  c.syntax = 'hak get jaequery/react-starter'
   c.summary = 'creates site'
   c.description = ''
-  c.example 'description', 'hak create something.com'
+  c.example 'description', 'hak get jaequery/react-starter'
   c.action do |args, options|
 
     if args.empty?
-      puts "ex: hak create something"
-    else
-      folder = args[0]
+      puts "ex: hak get jaequery/react-starter"
 
-      # set default to honebadger
-      if args[1].nil?
-        repo = "jaequery/honeybadger"
-      else
-        repo = args[1]
+    else
+      repo = args[0]      
+      folder = args[1]
+      package_author = repo.split("/")[0]
+      package = repo.split("/")[1]
+
+      # if second argument not passed, it uses the git repo's project name
+      if folder.nil?
+        folder = package
       end
 
-      system "hak pull #{repo}"
+      # downloads package from github
+      system "mkdir -p #{folder} && cd #{folder} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && mv #{package}-master/* #{package}-master/.* . && rm -r #{package}-master"
 
       # copies the package from local ~/.hak/[repo] to local folder
-      puts "copying ~/.hak/#{repo} to ./#{folder}"
-      system "cp -Rfp ~/.hak/#{repo} #{folder}"
+      #puts "copying ~/.hak/#{repo} to ./#{folder}"
+      #system "cp -Rfp ~/.hak/#{repo} #{folder}"
 
       # rename virtual host to app name
       file_path = "#{folder}/docker-compose.yml"
