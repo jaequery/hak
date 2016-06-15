@@ -124,8 +124,6 @@ It is virtually a one-click setup and even comes with batteries included via Din
 - DNS
 - NFS
 
-Bonus: It also comes with built-in web framework called "Honeybadger" for you to start creating websites right away.
-
 ### Dinghy
 Dinghy installs a DNS server listening on the private interface, which
 resolves \*.docker to the Dinghy VM. For instance, if you have a running
@@ -174,5 +172,5 @@ That should fix any brew related issues you might be having.
 ### Docker command doesn't work? Run this:
 
 ```
-echo 'eval $(dinghy env)' >> ~/.bashrc
+eval $(dinghy env)
 ```
