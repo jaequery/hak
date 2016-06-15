@@ -7,7 +7,7 @@ require 'colorize'
 require 'highline'
 
 program :name, 'hak'
-program :version, '0.5.1'
+program :version, '0.5.2'
 program :description, 'Hak - A Docker powered website manager for OSX'
 
 default_command :help
@@ -139,12 +139,12 @@ command :get do |c|
   c.action do |args, options|
 
     if args.empty?
-      puts "type one of the following to get started: "
+      puts "for more hak-ready packages, check out https://hak.sh/".yellow
+      puts "type one of the following to get started: ".yellow
       puts "hak get jaequery/react-starter"
       puts "hak get jaequery/honeybadger"
       puts " "
-      puts "for more hak-ready packages, check out https://hak.sh/"
-
+      
     else
       repo = args[0]      
       folder = args[1]
@@ -187,6 +187,7 @@ command :start do |c|
   c.description = 'this starts up the website'
   c.example 'description', 'hak start'
   c.action do |args, options|
+    check_docker
     run "docker-compose up -d && docker-compose logs -f"
   end
 end
@@ -197,6 +198,7 @@ command :stop do |c|
   c.description = 'stops the site'
   c.example 'description', 'hak stop'
   c.action do |args, options|
+    check_docker
     run "docker-compose stop"
   end
 end
@@ -207,6 +209,7 @@ command :restart do |c|
   c.description = 'restarts the site'
   c.example 'description', 'hak restart'
   c.action do |args, options|
+    check_docker
     run "docker-compose stop"
     run "docker-compose up -d && docker-compose logs -f"
   end
@@ -218,6 +221,7 @@ command :rm do |c|
   c.description = 'deletes docker containers for the project'
   c.example 'description', 'hak rm'
   c.action do |args, options|
+    check_docker
     run "docker-compose stop && docker-compose rm -f --all"
   end
 end
@@ -228,6 +232,7 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
+    check_docker
     run "docker-compose logs -f"
   end
 end
@@ -239,6 +244,7 @@ command :ssh do |c|
   c.description = ''
   c.example 'description', 'hak ssh [app]'
   c.action do |args, options|
+    check_docker
 
     file_name = 'docker-compose.yml'
     config_options = YAML.load_file(file_name)
@@ -267,6 +273,8 @@ command :ps do |c|
   c.description = ''
   c.example 'description', 'hak ps'
   c.action do |args, options|
+    check_docker
+
     container_names = run('docker ps --format "{{.Names}}"', true)
     lines = container_names.lines
     dinghy_running = false
@@ -396,4 +404,20 @@ def run(command, hide=false)
   end
 
   return res
+end
+
+def check_docker
+
+  res = `dinghy status`
+  if res.include? "VM: stopped"
+    running = false
+    puts "docker not running or stopped".yellow
+    puts "type this to power it on:".yellow
+    puts "hak on"
+    abort
+  else
+    running = true
+  end
+
+  return running
 end
