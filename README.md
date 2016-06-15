@@ -53,28 +53,35 @@ You should see proxy is up and running, which is the jwilder nginx proxy hak aut
 
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
-```sh
-hak get jaequery/react-starter
+These are public github repositories. Any repository with a docker-compose.yml and a VIRTUAL_HOST environmental variable in it should work. Hak will replace whatever is inside the VIRTUAL_HOST environment with the hostname you input when you type the hak get command.
+
+[honeybadger](https://github.com/jaequery/honeybadger)
+- a Ruby hackathon framework using Sinatra/Postgres with admin + ORM included
+```
+hak get jaequery/honeybadger mysite.com
 ```
 
-This will have created ./react-starter/ directory.
+[react-starter](https://github.com/jaequery/react-starter)
+- an express + react + mongo
+```
+hak get jaequery/react-starter mysite.com
+```
+
+This will have created ./mysite.com/ directory and once you start it, you should be able to access your site from http://mysite.com.docker/
+
+You can also edit the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
 
 #### Start the site
 
 ```sh
-cd react-starter
+cd mysite.com
 hak start
 ```
 
-To verify, type:
+Your site should now be viewable at http://mysite.com.docker/ from your browser (don't forget the trailing slash).
 
-```
-hak ps
-```
-
-Once done, your site should now be viewable at http://react-starter.docker/ from your browser (don't forget the trailing slash).
-
-If you wish to change the vhost from http://react-starter.docker to something else, just modify the docker-compose.yml and update the VIRTUAL_HOST setting to any other hostname you wish, but make sure it ends in .docker, as hak will resolve the hostname internally for you with it's built in DNS server.
+Note) Once started, your prompt will attach itself to docker-compose logs -f, and you can hit Ctrl-c to escape out. 
+To get back to the logs, you can type: ```hak logs```
 
 And to stop:
 
@@ -90,10 +97,9 @@ hak restart
 
 #### Deply your site
 
-Now that you finished developing your app and ready to deploy. Now what?
-
+Once you are done developing your site, it is time to deploy it to actual production server.
 Well, hak makes this extremely simple too!
-You just need an Ubuntu server you'd like to deploy to and then from your project root, type:
+First, you just need a fresh install of Ubuntu 14.04 server with SSH root access or a user with sudo access. 
 
 ```
 hak deploy root@x.x.x.x
@@ -101,7 +107,10 @@ hak deploy root@x.x.x.x
 
 Where x.x.x.x is the IP or hostname of your Ubuntu 14.04 TLS server.
 And that's it. 
-Hak will install Docker/Docker Compose if not installed already, and then it will rsync your project folder to the destination server, and then start up the docker-compose file.
+
+Hak have installed Docker and Docker Compose on it if it wasn't installed already and then it have rsynced your project folder to the destination server, and then started up the docker-compose up. It also created you a docker-compose-production.yml that you can modify as you wish. 
+
+To push out updates, simply repeat the deploy command and it will rsync it, docker-compose stop, and docker-compose up itself.
 
 ## How does it all work?
 
