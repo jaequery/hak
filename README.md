@@ -54,15 +54,15 @@ You should see proxy is up and running, which is the jwilder nginx proxy hak aut
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
 ```sh
-hak create somesite.com
+hak get jaequery/react-starter
 ```
 
-You will be prompted to choose a framework of choice and once done, it will have created a ./somesite.com/ directory.
+This will have created ./react-starter/ directory.
 
 #### Start the site
 
 ```sh
-cd somesite.com
+cd react-starter
 hak start
 ```
 
@@ -72,7 +72,9 @@ To verify, type:
 hak ps
 ```
 
-Once done, your site should now be viewable at http://somesite.com.docker/ from your browser (don't forget the trailing slash).
+Once done, your site should now be viewable at http://react-starter.docker/ from your browser (don't forget the trailing slash).
+
+If you wish to change the vhost from http://react-starter.docker to something else, just modify the docker-compose.yml and update the VIRTUAL_HOST setting to any other hostname you wish, but make sure it ends in .docker, as hak will resolve the hostname internally for you with it's built in DNS server.
 
 And to stop:
 
