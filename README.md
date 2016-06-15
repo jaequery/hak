@@ -12,7 +12,7 @@ Why use Hak?
 
 2) It runs off of standard docker-compose.yml file so no need to learn anything new. Hak doesn't add any complexity to Docker eco-system, it just simplifies it. For instance, hak start, is really just a shortcut to ```docker-compose up && docker-compose logs -f```
 
-3) It lets you easily deploy your app to any Ubuntu server with standard SSH root/sudo access. No need to learn any complex deployment strategy, all you need to do is, type: ```hak deploy user@someserver.com``` and it will set up Docker and launches your app on the destination server. It is that simple!
+3) It lets you easily deploy your app to any Ubuntu server with standard SSH root/sudo access. No need to learn any complex deployment strategy, all you need to do is, type: ```hak deploy root@someserver.com``` and it will set up Docker and launches your app on the destination server. It is that simple!
 
 
 ## Getting Started
@@ -98,8 +98,8 @@ hak deploy root@x.x.x.x
 ```
 
 Where x.x.x.x is the IP or hostname of your Ubuntu 14.04 TLS server.
-
-And that's it, it's awesome.
+And that's it. 
+Hak will install Docker/Docker Compose if not installed already, and then it will rsync your project folder to the destination server, and then start up the docker-compose file.
 
 ## How does it all work?
 
