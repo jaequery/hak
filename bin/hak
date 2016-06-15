@@ -7,7 +7,7 @@ require 'colorize'
 require 'highline'
 
 program :name, 'hak'
-program :version, '0.5.0'
+program :version, '0.5.1'
 program :description, 'Hak - A Docker powered website manager for OSX'
 
 default_command :help
@@ -218,7 +218,7 @@ command :rm do |c|
   c.description = 'deletes docker containers for the project'
   c.example 'description', 'hak rm'
   c.action do |args, options|
-    run "docker-compose rm -f --all"
+    run "docker-compose stop && docker-compose rm -f --all"
   end
 end
 
