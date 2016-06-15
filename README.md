@@ -2,7 +2,18 @@
 
 ## What does it do
 
-Have you ever wanted something that makes downloading and starting up a website as simple as, hak create website.com? Well, now you can.
+Hak is an all-in-one solution that downloads, runs, and deploy websites from your OSX.
+It uses Docker so you can quickly run any kind of stacks at your disposal, such as node.js, Ruby, PHP, etc .
+Hak also installs the most optimized Docker environment for you on your OSX through xhyve, nfs, and DNS/HTTP proxy out of the box.
+
+Why use Hak? 
+
+1) It allows you to run multiple apps at the same time and assigns a virtual host to each app it runs. No more http://localhost:3000/ now you can actually view them at http://yourappname.docker/
+
+2) It runs off of standard docker-compose.yml file so no need to learn anything new. Hak doesn't add any complexity to Docker eco-system, it just simplifies it. For instance, hak start, is really just a shortcut to ```docker-compose up && docker-compose logs -f```
+
+3) It lets you easily deploy your app to any Ubuntu server with standard SSH root/sudo access. No need to learn any complex deployment strategy, all you need to do is, type: ```hak deploy root@someserver.com``` and it will set up Docker and launches your app on the destination server. It is that simple!
+
 
 ## Getting Started
 
@@ -23,11 +34,6 @@ hak install
 ```
 
 This will try install everything including Docker, Docker Machine, Docker Compose, Dnsmasq, Nginx Proxy, and an NFS daemon.
-After installed, you should also run this and add this to your ~/.bash_profile (or ~/.zshrc):
-
-```
-eval $(dinghy env)
-```
 
 Now power it on by typing
 
@@ -48,15 +54,15 @@ You should see proxy is up and running, which is the jwilder nginx proxy hak aut
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
 ```sh
-hak create somesite
+hak get jaequery/react-starter
 ```
 
-This will have created somesite in your current working directory.
+This will have created ./react-starter/ directory.
 
-#### Start site
+#### Start the site
 
 ```sh
-cd somesite
+cd react-starter
 hak start
 ```
 
@@ -66,7 +72,9 @@ To verify, type:
 hak ps
 ```
 
-Once done, your site should now be viewable at http://somesite.docker/ from your browser (don't forget the trailing slash).
+Once done, your site should now be viewable at http://react-starter.docker/ from your browser (don't forget the trailing slash).
+
+If you wish to change the vhost from http://react-starter.docker to something else, just modify the docker-compose.yml and update the VIRTUAL_HOST setting to any other hostname you wish, but make sure it ends in .docker, as hak will resolve the hostname internally for you with it's built in DNS server.
 
 And to stop:
 
@@ -79,6 +87,21 @@ You can also restart it with:
 ```
 hak restart
 ```
+
+#### Deply your site
+
+Now that you finished developing your app and ready to deploy. Now what?
+
+Well, hak makes this extremely simple too!
+You just need an Ubuntu server you'd like to deploy to and then from your project root, type:
+
+```
+hak deploy root@x.x.x.x
+```
+
+Where x.x.x.x is the IP or hostname of your Ubuntu 14.04 TLS server.
+And that's it. 
+Hak will install Docker/Docker Compose if not installed already, and then it will rsync your project folder to the destination server, and then start up the docker-compose file.
 
 ## How does it all work?
 
