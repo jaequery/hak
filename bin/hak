@@ -7,60 +7,37 @@ require 'colorize'
 require 'highline'
 
 program :name, 'hak'
-program :version, '0.5.3'
-program :description, 'Hak - A Docker powered website manager for OSX'
+program :version, '0.5.6'
+program :description, 'Hak - A Docker-driven development platform'
 
 default_command :help
 
 command :install do |c|
   c.syntax = 'hak install'
-  c.summary = 'installs the hak environment'
-  c.description = 'installs docker and sets up the entire docker based environment along with proxy'
+  c.summary = 'installs hak'
+  c.description = 'installs hak'
   c.example 'description', 'hak install'
   c.action do |args, options|
 
-    # if ~/.hak not exists, initialize it
-    puts "checking to see if ~/.hak exists".blue
-    if !Dir.exists?(File.expand_path('~/.hak'))
-      puts "- creating ~/.hak".blue
-      system "mkdir -p ~/.hak/packages"
+    user = `whoami`.strip
 
-      # install required dependencies 
-      puts "- setting up docker, docker-machine, docker-compose, xhyve, wget from brew".blue
-
-      # re-install docker
-      system "brew tap codekitchen/dinghy"
-      system "brew install dinghy docker docker-machine docker-compose wget docker-machine-driver-xhyve"
-      system "brew upgrade dinghy docker docker-machine docker-compose wget docker-machine-driver-xhyve"
-      system "brew unlink dinghy docker docker-machine docker-compose wget docker-machine-driver-xhyve"
-      system "brew link dinghy docker docker-machine docker-compose wget docker-machine-driver-xhyve"
-      system "sudo chown root:wheel $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
-      system "sudo chmod u+s $(brew --prefix)/opt/docker-machine-driver-xhyve/bin/docker-machine-driver-xhyve"
-      system "dinghy create --provider xhyve"
-
+    if user != "root"
+      puts "Hak will automatically resolve all domains that ends in .docker to your docker vm for you."
+      puts "To do this, hak requires sudo to place an entry in /etc/resolver/docker, please type:"
+      puts "sudo hak install".yellow
+      abort
     else
-      puts "- it exists, skipping".blue
+
+      res = `cat > /etc/resolver/docker <<EOL
+nameserver 127.0.0.1
+port 19322`
+
+      puts "hak installed".green
+      puts "now turn hak on by typing:"
+      puts "hak on".yellow
+
     end
-  
-    # check if docker is running
-    check_docker
-
-    # check if env is set
-    check_env    
-
-  end
-end
-
-command :uninstall do |c|
-  c.syntax = 'hak destroy'
-  c.summary = 'destroys hak server'
-  c.description = 'shuts off and destroys the hak server'
-  c.example 'description', 'hak destroy'
-  c.action do |args, options|
-    system "dinghy halt"
-    system "dinghy destroy"
-    system "rm -rf ~/.hak"
-    system "rm -rf ~/.dinghy"
+    
   end
 end
 
@@ -70,13 +47,12 @@ command :on do |c|
   c.description = 'powers on the hak server'
   c.example 'description', 'hak on'
   c.action do |args, options|
-    if check_env
-
-      if check_proxy
-        system "dinghy start"
-      end
-            
-    end
+    check_docker
+    check_dns
+    `docker stop hak-proxy > /dev/null 2>&1`
+    `docker rm hak-proxy > /dev/null 2>&1`
+    `docker run -d -v /var/run/docker.sock:/tmp/docker.sock:ro -p 80:80 -p 443:443 -p 19322:19322/udp -e CONTAINER_NAME=hak-proxy --name hak-proxy codekitchen/dinghy-http-proxy > /dev/null 2>&1`
+    puts "hak-proxy started"
   end
 end
 
@@ -86,7 +62,9 @@ command :off do |c|
   c.description = 'shuts off the hak server'
   c.example 'description', 'hak off'
   c.action do |args, options|
-    system "dinghy stop"
+    `docker stop hak-proxy > /dev/null 2>&1`
+    `docker rm hak-proxy > /dev/null 2>&1`
+    puts "hak-proxy stopped"
   end
 end
 
@@ -142,7 +120,7 @@ command :start do |c|
   c.description = 'this starts up the website'
   c.example 'description', 'hak start'
   c.action do |args, options|
-    check_docker
+    check_all
     run "docker-compose up -d && docker-compose logs -f"
   end
 end
@@ -153,7 +131,7 @@ command :stop do |c|
   c.description = 'stops the site'
   c.example 'description', 'hak stop'
   c.action do |args, options|
-    check_docker
+    check_all
     run "docker-compose stop"
   end
 end
@@ -164,7 +142,7 @@ command :restart do |c|
   c.description = 'restarts the site'
   c.example 'description', 'hak restart'
   c.action do |args, options|
-    check_docker
+    check_all
     run "docker-compose stop"
     run "docker-compose up -d && docker-compose logs -f"
   end
@@ -176,7 +154,7 @@ command :rm do |c|
   c.description = 'deletes docker containers for the project'
   c.example 'description', 'hak rm'
   c.action do |args, options|
-    check_docker
+    check_all
     run "docker-compose stop && docker-compose rm -f --all"
   end
 end
@@ -199,7 +177,7 @@ command :ssh do |c|
   c.description = ''
   c.example 'description', 'hak ssh [app]'
   c.action do |args, options|
-    check_docker
+    check_all
 
     file_name = 'docker-compose.yml'
     config_options = YAML.load_file(file_name)
@@ -228,14 +206,14 @@ command :ps do |c|
   c.description = ''
   c.example 'description', 'hak ps'
   c.action do |args, options|
-    check_docker
+    check_all
 
     container_names = run('docker ps --format "{{.Names}}"', true)
     lines = container_names.lines
     dinghy_running = false
     sites = lines.map do |line|
       name = line.split('_')[0]
-      if name == 'dinghy'
+      if name == 'hak-proxy'
         dinghy_running = true
         "proxy"
       else
@@ -243,23 +221,8 @@ command :ps do |c|
       end
     end
 
-    if dinghy_running == true
-      puts sites.uniq
-    else
-      check_docker
-    end
+    puts sites.uniq
 
-  end
-end
-
-command :upgrade do |c|
-  c.syntax = 'hak upgrade'
-  c.summary = 'upgrades hak and dinghy'
-  c.description = ''
-  c.example 'description', 'hak upgrade'
-  c.action do |args, options|
-    system "gem update hak"
-    run "dinghy upgrade"
   end
 end
 
@@ -360,59 +323,43 @@ def run(command, hide=false)
   return res
 end
 
+def check_all
+  check_docker
+  check_dns
+  check_proxy
+end
+
 def check_docker
 
-  res = `dinghy status`
-  if res.include? "VM: stopped"
+  res = `docker ps`
+
+  if res.empty?
     running = false
-    puts "docker not running or stopped"
-    puts "type this to power it on:"
-    puts "hak on".yellow
+    puts "Please turn on Docker first. If you don't have Docker installed, please install it from Docker's website at."
+    puts "https://docs.docker.com/docker-for-mac/".green
     abort
-  else
-    running = true
   end
 
-  return running
+  return true
+
+end
+
+def check_dns
+  if !File.exist?('/etc/resolver/docker')
+    puts "hak not installed properly, please type:"
+    puts "sudo hak install".yellow
+    abort
+  end
+  return true
 end
 
 def check_proxy
-  res = `dinghy status`
-  if res.include? "PROXY: stopped"
-    # restarting seems to sometimes solve this issue
-    system "dinghy restart"
-    return false
+  res = `docker ps`
+  if !res.include? "hak-proxy"
+    puts "proxy not running, please type:"
+    puts "hak on".yellow
+    abort
   end
   return true
 end
 
-def check_env  
-  docker_machine_name = `echo $DOCKER_MACHINE_NAME`.strip
-  if docker_machine_name == "" || docker_machine_name != "dinghy"
-    puts "To connect the Docker client to the Docker daemon, please set these env variables, type:"
-    puts "$(dinghy env)".yellow
-    puts "To permanently add this to your shell type:  ~/.bashrc"
-    output_env
-    return false
-  end
-  return true
-end
-
-def output_env
-
-  shell = `echo $SHELL`.strip
-
-  if shell == '/bin/zsh'
-    docker_env_exist = `fgrep "export DOCKER_MACHINE_NAME=dinghy" ~/.zshrc |wc -l`.to_i
-    if docker_env_exist == 0
-      puts "echo '$(dinghy env)' >> ~/.zshrc".yellow
-    end
-  end
-
-  if shell == '/bin/bash'
-    docker_env_exist = `fgrep "export DOCKER_MACHINE_NAME=dinghy" ~/.bash_profile |wc -l`.to_i
-    if docker_env_exist == 0
-      puts "echo '$(dinghy env)' >> ~/.bash_profile".yellow
-    end
-  end
-end

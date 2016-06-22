@@ -3,5 +3,5 @@ require 'rubygems'
 require 'commander/import'
 
 module Hak
-    
+
 end
