@@ -7,7 +7,7 @@ require 'colorize'
 require 'highline'
 
 program :name, 'hak'
-program :version, '0.5.6'
+program :version, '0.5.9'
 program :description, 'Hak - A Docker-driven development platform'
 
 default_command :help
@@ -52,7 +52,7 @@ command :on do |c|
     `docker stop hak-proxy > /dev/null 2>&1`
     `docker rm hak-proxy > /dev/null 2>&1`
     `docker run -d -v /var/run/docker.sock:/tmp/docker.sock:ro -p 80:80 -p 443:443 -p 19322:19322/udp -e CONTAINER_NAME=hak-proxy --name hak-proxy codekitchen/dinghy-http-proxy > /dev/null 2>&1`
-    puts "hak-proxy started"
+    puts "hak-proxy started".green
   end
 end
 
@@ -64,7 +64,7 @@ command :off do |c|
   c.action do |args, options|
     `docker stop hak-proxy > /dev/null 2>&1`
     `docker rm hak-proxy > /dev/null 2>&1`
-    puts "hak-proxy stopped"
+    puts "hak-proxy stopped".green
   end
 end
 
@@ -121,7 +121,11 @@ command :start do |c|
   c.example 'description', 'hak start'
   c.action do |args, options|
     check_all
+    check_compose
+
     run "docker-compose up -d && docker-compose logs -f"
+    puts "app started".green    
+    
   end
 end
 
@@ -133,6 +137,7 @@ command :stop do |c|
   c.action do |args, options|
     check_all
     run "docker-compose stop"
+    puts "app stopped".green
   end
 end
 
@@ -145,6 +150,7 @@ command :restart do |c|
     check_all
     run "docker-compose stop"
     run "docker-compose up -d && docker-compose logs -f"
+    puts "app restarted".green
   end
 end
 
@@ -156,6 +162,7 @@ command :rm do |c|
   c.action do |args, options|
     check_all
     run "docker-compose stop && docker-compose rm -f --all"
+    puts "app removed".green
   end
 end
 
@@ -361,5 +368,12 @@ def check_proxy
     abort
   end
   return true
+end
+
+def check_compose
+  if !File.file?("docker-compose.yml")    
+    puts "docker-compose.yml not found here, please try another folder".yellow
+    abort
+  end
 end
 
