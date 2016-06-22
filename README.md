@@ -58,13 +58,13 @@ These are public github repositories. Any repository with a docker-compose.yml a
 [honeybadger](https://github.com/jaequery/honeybadger)
 - a Ruby hackathon framework using Sinatra/Postgres with admin + ORM included
 ```
-hak get jaequery/honeybadger mysite.com
+hak clone jaequery/honeybadger mysite.com
 ```
 
 [react-starter](https://github.com/jaequery/react-starter)
 - an express + react + mongo
 ```
-hak get jaequery/react-starter mysite.com
+hak clone jaequery/react-starter mysite.com
 ```
 
 This will have created ./mysite.com/ directory and once you start it, you should be able to access your site from http://mysite.com.docker/
