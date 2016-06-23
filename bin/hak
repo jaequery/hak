@@ -8,7 +8,7 @@ require 'highline'
 require 'rbconfig'
 
 program :name, 'hak'
-program :version, '0.6.0'
+program :version, '0.7.2'
 program :description, 'Hak - A Docker-driven development platform'
 
 default_command :help
@@ -26,6 +26,8 @@ command :install do |c|
     when :macosx
       installed = `echo "nameserver 127.0.0.1\nport 19322" | sudo tee -a /etc/resolver/docker`
     when :linux
+      puts "installing required dependencies".green
+      system "sudo apt-get install -y unzip"
       installed = `gem install dory`
     else
       puts "other os are not supported at this time".red
@@ -59,6 +61,7 @@ command :on do |c|
       `docker rm hak-proxy > /dev/null 2>&1`
       `docker run -d -v /var/run/docker.sock:/tmp/docker.sock:ro -p 80:80 -p 443:443 -p 19322:19322/udp -e CONTAINER_NAME=hak-proxy --name hak-proxy codekitchen/dinghy-http-proxy > /dev/null 2>&1`
     when :linux
+      check_dory
       `dory up`
     end
     puts "hak-proxy started".green
@@ -108,7 +111,8 @@ command :clone do |c|
       end
 
       # downloads package from github
-      system "mkdir -p #{folder} && cd #{folder} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && mv #{package}-master/* #{package}-master/.* . && rm -r #{package}-master"
+      system "mkdir -p #{folder} && cd #{folder} && wget https://github.com/#{repo}/archive/master.zip && unzip master.zip && rm -f master.zip && cp -r #{package}-master/. ."
+      system "cd #{folder} && rm -rf #{package}-master"
 
       # rename virtual host to app name
       file_path = "#{folder}/docker-compose.yml"
@@ -376,7 +380,6 @@ end
 
 def check_dns
 
-
   case os
   when :macosx
 
@@ -415,11 +418,14 @@ def check_compose
 end
 
 def check_dory
-  res = system "dory status"
-  if res.include? "not running"
-    puts 'Dory was not running, starting it up'.green
-    system "dory on"
+
+  res = `which dory`
+  if res.empty?
+    puts "hak not installed. type:".green
+    puts "hak install".yellow
+    abort
   end
+  
 end
 
 def os
