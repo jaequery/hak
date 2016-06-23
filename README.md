@@ -12,8 +12,8 @@ In just a single command, you can now host any number of apps ranging from Node.
 Hak covers the entire process of an app development cycle:
 
 - It pulls code / application - just like NPM/APT ```hak clone jaequery/honeybadger yourapp```
-- It hosts your application with a hostname - http://yourapp.docker (cd yourapp && hak start) 
-- Deploy your app to an Ubuntu server (cd yourapp && hak deploy root@yourserver.com)
+- It hosts your application with a hostname - http://yourapp.docker ```cd yourapp && hak start```
+- Deploy your app to an Ubuntu server ```cd yourapp && hak deploy root@yourserver.com```
 
 ## Hak is for you, if:
 - You are a one-click kind of guy and loves saving time
