@@ -5,9 +5,10 @@ require 'commander/import'
 require 'yaml'
 require 'colorize'
 require 'highline'
+require 'rbconfig'
 
 program :name, 'hak'
-program :version, '0.5.9'
+program :version, '0.6.0'
 program :description, 'Hak - A Docker-driven development platform'
 
 default_command :help
@@ -17,25 +18,27 @@ command :install do |c|
   c.summary = 'installs hak'
   c.description = 'installs hak'
   c.example 'description', 'hak install'
-  c.action do |args, options|
+  c.action do |args, options|  
 
-    user = `whoami`.strip
+    installed = false    
 
-    if user != "root"
-      puts "Hak will automatically resolve all domains that ends in .docker to your docker vm for you."
-      puts "To do this, hak requires sudo to place an entry in /etc/resolver/docker, please type:"
-      puts "sudo hak install".yellow
-      abort
+    case os
+    when :macosx
+      installed = `echo "nameserver 127.0.0.1\nport 19322" | sudo tee -a /etc/resolver/docker`
+    when :linux
+      installed = `gem install dory`
     else
+      puts "other os are not supported at this time".red
+      abort
+    end
 
-      res = `cat > /etc/resolver/docker <<EOL
-nameserver 127.0.0.1
-port 19322`
-
+    if installed
       puts "hak installed".green
       puts "now turn hak on by typing:"
       puts "hak on".yellow
-
+    else
+      puts "dns resolver was not setup correctly".red
+      abort
     end
     
   end
@@ -47,11 +50,17 @@ command :on do |c|
   c.description = 'powers on the hak server'
   c.example 'description', 'hak on'
   c.action do |args, options|
-    check_docker
-    check_dns
-    `docker stop hak-proxy > /dev/null 2>&1`
-    `docker rm hak-proxy > /dev/null 2>&1`
-    `docker run -d -v /var/run/docker.sock:/tmp/docker.sock:ro -p 80:80 -p 443:443 -p 19322:19322/udp -e CONTAINER_NAME=hak-proxy --name hak-proxy codekitchen/dinghy-http-proxy > /dev/null 2>&1`
+
+    case os
+    when :macosx
+      check_docker
+      check_dns
+      `docker stop hak-proxy > /dev/null 2>&1`
+      `docker rm hak-proxy > /dev/null 2>&1`
+      `docker run -d -v /var/run/docker.sock:/tmp/docker.sock:ro -p 80:80 -p 443:443 -p 19322:19322/udp -e CONTAINER_NAME=hak-proxy --name hak-proxy codekitchen/dinghy-http-proxy > /dev/null 2>&1`
+    when :linux
+      `dory up`
+    end
     puts "hak-proxy started".green
   end
 end
@@ -62,8 +71,13 @@ command :off do |c|
   c.description = 'shuts off the hak server'
   c.example 'description', 'hak off'
   c.action do |args, options|
-    `docker stop hak-proxy > /dev/null 2>&1`
-    `docker rm hak-proxy > /dev/null 2>&1`
+    case os
+    when :macosx
+      `docker stop hak-proxy > /dev/null 2>&1`
+      `docker rm hak-proxy > /dev/null 2>&1`
+    when :linux
+      `dory down`
+    end
     puts "hak-proxy stopped".green
   end
 end
@@ -76,7 +90,7 @@ command :clone do |c|
   c.action do |args, options|
 
     if args.empty?
-      puts "for more hak ready packages, check out https://hak.sh/"
+      puts "for more packages, check out https://www.composeup.com/"
       puts "type one of the following to get started: "
       puts "hak clone jaequery/react-starter".yellow
       puts "hak clone jaequery/honeybadger".yellow
@@ -122,10 +136,8 @@ command :start do |c|
   c.action do |args, options|
     check_all
     check_compose
-
     run "docker-compose up -d && docker-compose logs -f"
     puts "app started".green    
-    
   end
 end
 
@@ -172,7 +184,7 @@ command :logs do |c|
   c.description = ''
   c.example 'description', 'hak logs'
   c.action do |args, options|
-    check_docker
+    check_all
     run "docker-compose logs -f"
   end
 end
@@ -215,17 +227,23 @@ command :ps do |c|
   c.action do |args, options|
     check_all
 
+    case os
+    when :macosx
+      proxy_name = "hak-proxy"
+    when :linux
+      proxy_name = "dory_dinghy_http_proxy"
+    end
+
     container_names = run('docker ps --format "{{.Names}}"', true)
     lines = container_names.lines
     dinghy_running = false
     sites = lines.map do |line|
       name = line.split('_')[0]
-      if name == 'hak-proxy'
-        dinghy_running = true
-        "proxy"
-      else
-        name
-      end
+      # if name == proxy_name
+      #   dinghy_running = true
+      # else
+      #   name
+      # end
     end
 
     puts sites.uniq
@@ -331,9 +349,14 @@ def run(command, hide=false)
 end
 
 def check_all
-  check_docker
-  check_dns
-  check_proxy
+  case os
+  when :macosx
+    check_docker
+    check_dns
+    check_proxy
+  when :linux
+    check_dory
+  end
 end
 
 def check_docker
@@ -352,11 +375,25 @@ def check_docker
 end
 
 def check_dns
-  if !File.exist?('/etc/resolver/docker')
-    puts "hak not installed properly, please type:"
-    puts "sudo hak install".yellow
-    abort
+
+
+  case os
+  when :macosx
+
+    if !File.exist?('/etc/resolver/docker')
+      puts "hak not installed properly, please type:"
+      puts "hak install".yellow
+      abort
+    end
+
+  when :linux
+    if !File.exist?('/etc/resolver/docker')
+      puts "hak not installed properly, please type:"
+      puts "hak install".yellow
+      abort
+    end
   end
+
   return true
 end
 
@@ -375,5 +412,31 @@ def check_compose
     puts "docker-compose.yml not found here, please try another folder".yellow
     abort
   end
+end
+
+def check_dory
+  res = system "dory status"
+  if res.include? "not running"
+    puts 'Dory was not running, starting it up'.green
+    system "dory on"
+  end
+end
+
+def os
+  @os ||= (
+    host_os = RbConfig::CONFIG['host_os']
+    case host_os
+    when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+      :windows
+    when /darwin|mac os/
+      :macosx
+    when /linux/
+      :linux
+    when /solaris|bsd/
+      :unix
+    else
+      raise Error::WebDriverError, "unknown os: #{host_os.inspect}"
+    end
+  )
 end
 

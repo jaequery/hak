@@ -16,4 +16,5 @@ Gem::Specification.new do |spec|
   spec.executables   = ["hak"]
   spec.add_dependency 'commander', '~> 4.4'
   spec.add_dependency 'colorize'
+  spec.add_dependency 'rbconfig'
 end
