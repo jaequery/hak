@@ -8,9 +8,9 @@ It provides you with an out of the box, over-simplified web development flow for
 
 It does three things:
 
-- It pulls code / application, just like an NPM or Apt (hak clone jaequery/honeybadger yourapp)
+- It pulls code / application, just like Git (hak clone jaequery/honeybadger yourapp)
 - It hosts your application with a hostname, http://yourapp.docker (cd yourapp && hak start) 
-- Deploy your app to an Ubuntu server (cd yourapp && hak deploy root@someserver.com)
+- Deploy your app to an Ubuntu server (cd yourapp && hak deploy root@yourserver.com)
 
 ## Hak is for you, if:
 - You are a one-click kind of guy and loves saving time
