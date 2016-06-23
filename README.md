@@ -6,7 +6,7 @@ Hak provides you with a light and simple web development environment for your Ma
 
 It is a CLI that pulls code, hosts your app, and deploys it to a remote server.
 
-In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby applications without juggling through VM's, ports, and services.
+In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby and Java applications without juggling through multiple VM's, ports, and services.
 
 ## What does it do
 
