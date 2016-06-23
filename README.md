@@ -1,59 +1,98 @@
 # Hak
 
+## What is it
+
+Hak provides you with a light and simple web development environment for your Mac OSX or Ubuntu. 
+
+It is a CLI that pulls code, hosts your app, and deploys it to a remote server.
+
+In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby and Java applications without juggling through multiple VM's, ports, and services.
+
 ## What does it do
 
-Hak is an all-in-one solution that downloads, runs, and deploy websites from your OSX.
-It uses Docker so you can quickly run any kind of stacks at your disposal, such as node.js, Ruby, PHP, etc .
-Hak also installs the most optimized Docker environment for you on your OSX through xhyve, nfs, and DNS/HTTP proxy out of the box.
+Hak covers the entire process of an app development cycle in an elegant fashion:
 
-Why use Hak? 
+- It pulls code / application and sets up the docker-compose.yml file
+- It provides a name-based hosting of your applications, http://yourapp.docker (and not http://127.0.0.1:3000)
+- It deploys and launches your app to a remote Ubuntu server
 
-1) It allows you to run multiple apps at the same time and assigns a virtual host to each app it runs. No more http://localhost:3000/ now you can actually view them at http://yourappname.docker/
+Here is how that process looks like:
 
-2) It runs off of standard docker-compose.yml file so no need to learn anything new. Hak doesn't add any complexity to Docker eco-system, it just simplifies it. For instance, hak start, is really just a shortcut to ```docker-compose up && docker-compose logs -f```
+```sh
+hak clone jaequery/honeybadger yourapp
+cd yourapp
+hak start
+```
 
-3) It lets you easily deploy your app to any Ubuntu server with standard SSH root/sudo access. No need to learn any complex deployment strategy, all you need to do is, type: ```hak deploy root@someserver.com``` and it will set up Docker and launches your app on the destination server. It is that simple!
+Now you should be able to view your website at http://yourapp.docker/
 
+Lastly, after you are done coding, to deploy you simply just:
+
+```sh
+hak deploy root@yourserver.com
+```
+
+## Hak is for you, if:
+- You are a 1-click kind of guy
+- You want an elequent way of managing your apps and hate juggling ports/IPs/hosts file
+- You work on multiple languages and platforms (PHP, Node.js, Ruby, and etc...)
+- You love Docker 
+- Your middlename is rapid-development
+
+Basically, if you code, Hak is for you. =P
 
 ## Getting Started
 
 #### Pre-requisites
 
-* Mac OSX "Yosemite or El Capitan"
+Hak have been tested on OSX but it can also work in Ubuntu as well.
+* docker + docker compose
+
+#### Install Docker
+
+##### For Mac OSX
+First, download this and install it [https://docs.docker.com/docker-for-mac](Docker for Mac OSX)
+Hak will not function without docker and docker-compose.
 
 #### Download hak
 
+Note: Hak is currently bundled as a ruby gem package.
+
 ```sh
-$ sudo gem install hak
+gem install hak
 ```
 
 #### Install Hak
+
+Installs the DNS resolver and a reverse proxy.
 
 ```sh
 hak install
 ```
 
-This will try install everything including Docker, Docker Machine, Docker Compose, Dnsmasq, Nginx Proxy, and an NFS daemon.
+#### Power on Hak
 
-Now power it on by typing
+Now power it on by typing:
 
 ```
 hak on
 ```
 
-To verify that it is all working, just type:
+To verify that it all working, just type the following:
 
 ```
 hak ps
 ```
 
-You should see proxy is up and running, which is the jwilder nginx proxy hak automatically uses for virtual hosting all your websites.
+You should see proxy is up and running, which is the amazing jwilder nginx proxy that hak uses for virtual hosting all your websites.
 
-#### Create a site
+#### Let's create a site
 
 Now go into a folder where you'd like to store all your websites, for instance: ~/Sites.
 
-These are public github repositories. Any repository with a docker-compose.yml and a VIRTUAL_HOST environmental variable in it should work. Hak will replace whatever is inside the VIRTUAL_HOST environment with the hostname you input when you type the hak get command.
+Let's clone one of these bad boys:
+
+Here is my personal favorite:
 
 [honeybadger](https://github.com/jaequery/honeybadger)
 - a Ruby hackathon framework using Sinatra/Postgres with admin + ORM included
@@ -61,15 +100,15 @@ These are public github repositories. Any repository with a docker-compose.yml a
 hak clone jaequery/honeybadger mysite.com
 ```
 
+And here is for the Node.js+React fans out there:
+
 [react-starter](https://github.com/jaequery/react-starter)
 - an express + react + mongo
 ```
 hak clone jaequery/react-starter mysite.com
 ```
 
-This will have created ./mysite.com/ directory and once you start it, you should be able to access your site from http://mysite.com.docker/
-
-You can also edit the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
+This will have created a ./mysite.com folder with a docker-compose.yml setup with a VIRTUAL_HOST=mysite.com.docker embedded in it.
 
 #### Start the site
 
@@ -79,11 +118,12 @@ hak start
 ```
 
 Your site should now be viewable at http://mysite.com.docker/ from your browser (don't forget the trailing slash).
+You can also modify the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
 
 Note) Once started, your prompt will attach itself to docker-compose logs -f, and you can hit Ctrl-c to escape out. 
 To get back to the logs, you can type: ```hak logs```
 
-And to stop:
+And to stop the site:
 
 ```
 hak stop
@@ -112,65 +152,12 @@ Hak have installed Docker and Docker Compose on it if it wasn't installed alread
 
 To push out updates, simply repeat the deploy command and it will rsync it, docker-compose stop, and docker-compose up itself.
 
-## How does it all work?
+## Special thanks
 
-Hak currently uses Dinghy as a boilerplate to setup many of the things required for an optimal Docker environment on OSX.
-It is virtually a one-click setup and even comes with batteries included via Dinghy:
+I'd like to mention that none of this would've been possible if not for these brilliant opensource projects:
 
-- Docker 
-- Docker Machine
-- xhyve
-- Nginx HTTP Proxy
-- DNS
-- NFS
-
-### Dinghy
-Dinghy installs a DNS server listening on the private interface, which
-resolves \*.docker to the Dinghy VM. For instance, if you have a running
-container that exposes port 3000 to the host, and you like to call it
-`myrailsapp`, you can connect to it at `myrailsapp.docker` port 3000, e.g.
-`http://myrailsapp.docker:3000/` or `telnet myrailsapp.docker 3000`.
-
-### HTTP proxy
-
-Dinghy will run a HTTP proxy inside a docker container in the VM, giving you
-easy access to web apps running in other containers. This is based heavily on
-the excellent [nginx-proxy](https://github.com/jwilder/nginx-proxy) docker tool.
-
-The proxy will take a few moments to download the first time you launch the VM.
-
-Any containers that you want proxied, make sure the `VIRTUAL_HOST`
-environment variable is set, either with the `-e` option to docker or
-the environment hash in docker-compose. For instance setting
-`VIRTUAL_HOST=myrailsapp.docker` will make the container's exposed port
-available at `http://myrailsapp.docker/`. If the container exposes more
-than one port, set `VIRTUAL_PORT` to the http port number, as well.
-
-See the nginx-proxy documentation for further details.
-
-If you use docker-compose, you can add VIRTUAL_HOST to the environment hash in
-`docker-compose.yml`, for instance:
-
-```yaml
-web:
-  build: .
-  environment:
-    VIRTUAL_HOST: myrailsapp.docker
-```
-
-## FAQ
-
-### It didn't install correctly? Run this:
-
-```
-sudo chown -R $(whoami) /usr/local
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-```
-
-That should fix any brew related issues you might be having.
-
-### Docker command doesn't work? Run this:
-
-```
-eval $(dinghy env)
-```
+- https://github.com/docker
+- https://github.com/jwilder/nginx-proxy
+- https://github.com/codekitchen/dinghy
+- https://github.com/FreedomBen/dory
+- https://github.com/andyshinn/docker-dnsmasq
