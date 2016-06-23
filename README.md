@@ -1,7 +1,7 @@
 # Hak
 
 ## What is it
-Hak is a CLI that pulls code, hosts your app, and deploy it to a remote server.
+Hak is a CLI that pulls code, hosts your app, and deploys it to a remote server.
 
 It provides you with an out of the box, over-simplified web development flow for your Mac OSX or Ubuntu. 
 
