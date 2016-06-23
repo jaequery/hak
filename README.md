@@ -12,9 +12,9 @@ In just a single command, you can now host any number of apps ranging from Node.
 
 Hak covers the entire process of an app development cycle in an elegant fashion:
 
-- It pulls code / application - just like NPM/APT
-- It hosts your application with a hostname - http://yourapp.docker 
-- Deploys your app to an Ubuntu server 
+- It pulls code / application and sets up the docker-compose.yml file
+- It provides a name-based hosting of your application, http://yourapp.docker and not http://127.0.0.1:3000
+- It deploys and launches your app to a remote Ubuntu server
 
 Here is how that process looks like:
 
