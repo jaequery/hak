@@ -9,7 +9,7 @@ In just a single command, you can now host any number of apps ranging from Node.
 
 ## What does it do
 
-Hak covers the entire process of an app development cycle:
+Hak covers the entire process of an app development cycle in an elegant fashion:
 
 - It pulls code / application - just like NPM/APT ```hak clone jaequery/honeybadger yourapp```
 - It hosts your application with a hostname - http://yourapp.docker ```cd yourapp && hak start```
