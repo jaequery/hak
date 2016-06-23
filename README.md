@@ -37,19 +37,24 @@ hak deploy root@yourserver.com
 - You love Docker 
 - Your middlename is rapid-development
 
-Basically, if you are a coder, Hak is for you. =P
+Basically, if you code, Hak is for you. =P
 
 ## Getting Started
 
 #### Pre-requisites
 
-* Mac OSX "Yosemite or El Capitan"
-* Docker for Mac OSX
+* Mac OSX "Yosemite or El Capitan" or Ubuntu 14.04 and later
+* docker + docker compose
 
-#### Install Docker for Mac OSX
-You can get it from here [https://docs.docker.com/docker-for-mac](Docker for Mac OSX)
+#### Install Docker
+
+##### For Mac OSX
+First, download this and install it [https://docs.docker.com/docker-for-mac](Docker for Mac OSX)
+Hak will not function without docker and docker-compose.
 
 #### Download hak
+
+Note: Hak is currently bundled as a ruby gem package.
 
 ```sh
 gem install hak
