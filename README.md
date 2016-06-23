@@ -13,7 +13,7 @@ In just a single command, you can now host any number of apps ranging from Node.
 Hak covers the entire process of an app development cycle in an elegant fashion:
 
 - It pulls code / application and sets up the docker-compose.yml file
-- It provides a name-based hosting of your application, http://yourapp.docker and not http://127.0.0.1:3000
+- It provides a name-based hosting of your applications, http://yourapp.docker (and not http://127.0.0.1:3000)
 - It deploys and launches your app to a remote Ubuntu server
 
 Here is how that process looks like:
@@ -24,7 +24,9 @@ cd yourapp
 hak start
 ```
 
-And after you are done coding, to deploy, you just:
+Now you should be able to view your website at http://yourapp.docker/
+
+Lastly, after you are done coding, to deploy you simply just:
 
 ```sh
 hak deploy root@yourserver.com
@@ -43,7 +45,7 @@ Basically, if you code, Hak is for you. =P
 
 #### Pre-requisites
 
-* Mac OSX "Yosemite or El Capitan" or Ubuntu 14.04 and later
+Hak have been tested on OSX but it can also work in Ubuntu as well.
 * docker + docker compose
 
 #### Install Docker
