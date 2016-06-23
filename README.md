@@ -30,11 +30,11 @@ hak deploy root@yourserver.com
 ```
 
 ## Hak is for you, if:
-- You are a one-click kind of guy and loves saving time
-- You wanted a more elequent way of managing your apps than through ports, IPs, and hosts file
+- You are a 1-click kind of guy
+- You want an elequent way of managing your apps and hate juggling ports/IPs/hosts file
 - You work on multiple languages and platforms (PHP, Node.js, Ruby, and etc...)
-- You love Docker
-- You love bootstraps
+- You love Docker 
+- Your middlename is rapid-development
 
 Basically, if you are a coder, Hak is for you. =P
 
