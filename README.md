@@ -13,7 +13,7 @@ Hak covers the entire process of an app development cycle in an elegant fashion:
 
 - It pulls code / application - just like NPM/APT
 - It hosts your application with a hostname - http://yourapp.docker 
-- Deploy your app to an Ubuntu server 
+- Deploys your app to an Ubuntu server 
 
 Here is how that process looks like:
 
