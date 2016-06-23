@@ -8,7 +8,7 @@ require 'highline'
 require 'rbconfig'
 
 program :name, 'hak'
-program :version, '0.7.2'
+program :version, '1.0'
 program :description, 'Hak - A Docker-driven development platform'
 
 default_command :help
