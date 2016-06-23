@@ -1,15 +1,18 @@
 # Hak
 
 ## What is it
-Hak is a CLI that pulls code, hosts your app, and deploy it to a remote server. 
-It provides you with an out of the box, over-simplified web development flow for your Mac OSX or Ubuntu. In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby applications without juggling through VM's, ports, and services.
+Hak is a CLI that pulls code, hosts your app, and deploy it to a remote server.
+
+It provides you with an out of the box, over-simplified web development flow for your Mac OSX or Ubuntu. 
+
+In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby applications without juggling through VM's, ports, and services.
 
 ## What does it do
 
-It does three things:
+Hak covers the entire process of an app development cycle:
 
-- It pulls code / application, just like Git (hak clone jaequery/honeybadger yourapp)
-- It hosts your application with a hostname, http://yourapp.docker (cd yourapp && hak start) 
+- It pulls code / application - just like NPM/APT ```hak clone jaequery/honeybadger yourapp```
+- It hosts your application with a hostname - http://yourapp.docker (cd yourapp && hak start) 
 - Deploy your app to an Ubuntu server (cd yourapp && hak deploy root@yourserver.com)
 
 ## Hak is for you, if:
