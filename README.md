@@ -152,3 +152,12 @@ Hak have installed Docker and Docker Compose on it if it wasn't installed alread
 
 To push out updates, simply repeat the deploy command and it will rsync it, docker-compose stop, and docker-compose up itself.
 
+## Special thanks
+
+I'd like to mention that none of this would've been possible if not for these brilliant opensource projects:
+
+- https://github.com/docker
+- https://github.com/jwilder/nginx-proxy
+- https://github.com/codekitchen/dinghy
+- https://github.com/FreedomBen/dory
+- https://github.com/andyshinn/docker-dnsmasq
