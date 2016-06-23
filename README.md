@@ -108,9 +108,7 @@ And here is for the Node.js+React fans out there:
 hak clone jaequery/react-starter mysite.com
 ```
 
-This will have created ./mysite.com/ directory and once you start it, you should be able to access your site from http://mysite.com.docker/
-
-You can also edit the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
+This will have created a ./mysite.com folder with a docker-compose.yml setup with a VIRTUAL_HOST=mysite.com.docker embedded in it.
 
 #### Start the site
 
@@ -120,6 +118,7 @@ hak start
 ```
 
 Your site should now be viewable at http://mysite.com.docker/ from your browser (don't forget the trailing slash).
+You can also modify the VIRTUAL_HOST manually by editing the docker-compose.yml file yourself.
 
 Note) Once started, your prompt will attach itself to docker-compose logs -f, and you can hit Ctrl-c to escape out. 
 To get back to the logs, you can type: ```hak logs```
