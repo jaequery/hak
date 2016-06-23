@@ -2,11 +2,11 @@
 
 ## What is it
 
-Hak provides you with an out of the box, over-simplified web development flow for your Mac OSX or Ubuntu. 
-
-In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby applications without juggling through VM's, ports, and services.
+Hak provides you with a light and simple web development environment for your Mac OSX or Ubuntu. 
 
 It is a CLI that pulls code, hosts your app, and deploys it to a remote server.
+
+In just a single command, you can now host any number of apps ranging from Node.js, PHP, to Ruby applications without juggling through VM's, ports, and services.
 
 ## What does it do
 
